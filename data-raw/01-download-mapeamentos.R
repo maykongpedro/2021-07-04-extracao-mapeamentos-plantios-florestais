@@ -84,11 +84,36 @@ pdftools::pdf_subset(snif_estadual_ibge,
                      output = "./data-raw/pdf/01-Brasil/02-IBGE/snif_2019_dados_estaduais_ibge.pdf")
 
 
- 
+
+# 03 - Mapeamentos do Paraná - APRE ---------------------------------------
+
+# APRE - ESTUDO SETORIAL 2020
+# Pode ser encontrado no site da APRE, pelo seguinte link:
+
+url_apre_estudo_setorial_2020 <- "https://apreflorestas.com.br/wp-content/uploads/2021/01/estudo_setorial_digital.pdf"
+
+# extraindo e salvando apenas as páginas que serão usadas
+pdftools::pdf_subset(url_apre_estudo_setorial_2020, 
+                     pages = c(24), 
+                     output = "./data-raw/pdf/02-PR/01-APRE/apre_estudo_setorial_2020.pdf")
+
+
+# APRE - ESTUDO SETORIAL 2017-2018
+# Pode ser encontrado no site da APRE, pelo seguinte link:
+
+url_apre_estudo_setorial_2017_2018 <- "https://apreflorestas.com.br/?flowpaper-lite-plugin=get-pdf&pdf=https://apreflorestas.com.br/wp-content/uploads/2020/10/Estudo_Setorial_Apre_2017-2018.pdf"
+
+pdftools::pdf_subset(url_apre_estudo_setorial_2017_2018, 
+                     pages = c(19), 
+                     output = "./data-raw/pdf/02-PR/01-APRE/apre_estudo_setorial_2017-2018.pdf")
+
+# Uma vez estudado esses números e lendo a fonte dos dados da página extraída, 
+# é possível perceber que são os mesmos dados do mapeamento do IFPR & SFB de 2015.
+# Ou seja, não será necessário extraí-los.
 
 
 
-# Funficionou, porém vou ter um trabalho desnecessário baixando pdf por pdf
-# url <- "https://drive.google.com/uc?export=download&id=1stOUQ7Cmyhu8gMnVdoNo2qswgyRoDj6f"
-# download.file(url, destfile = "./data-raw/pdf/01-Brasil/-RELATORIO-IBA-2020.pdf")
+
+
+
 
