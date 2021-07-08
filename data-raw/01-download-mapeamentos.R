@@ -113,6 +113,23 @@ pdftools::pdf_subset(url_apre_estudo_setorial_2017_2018,
 
 
 
+# 04 - Mapeamentos do Paraná - SFB & IFPR ---------------------------------
+
+# IFPR e SFB - Mapeamento dos plantios florestais do Paraná
+# Pode ser encontrado no site da APRE, pelo seguinte link:
+# https://apreflorestas.com.br/publicacoes/ifpr-e-sfb-mapeamento-dos-plantios-florestais-do-estado-do-parana/
+
+# Para esse mapeamento não será realizada extração nesse projeto pois esse trabalho
+# já foi executado no seguinte projeto:
+# https://github.com/maykongpedro/2021-06-17-tcc-curso-r-faxina-de-dados
+
+# Então nesse projeto apenas será feito o download da base final já organizada:
+
+ifpr_sfb_2015 <- "https://github.com/maykongpedro/2021-06-17-tcc-curso-r-faxina-de-dados/raw/r-studio-cloud/data/mapeamento_SFB-IFPR_completo_cod_IBGE.rds"
+
+download.file(url = ifpr_sfb_2015, destfile = "./data/PR_IFPR_SFB_2015.rds")
+
+
 
 
 
