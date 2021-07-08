@@ -103,6 +103,7 @@ pdftools::pdf_subset(url_apre_estudo_setorial_2020,
 
 url_apre_estudo_setorial_2017_2018 <- "https://apreflorestas.com.br/?flowpaper-lite-plugin=get-pdf&pdf=https://apreflorestas.com.br/wp-content/uploads/2020/10/Estudo_Setorial_Apre_2017-2018.pdf"
 
+# extraindo e salvando apenas a página que será utilizada
 pdftools::pdf_subset(url_apre_estudo_setorial_2017_2018, 
                      pages = c(19), 
                      output = "./data-raw/pdf/02-PR/01-APRE/apre_estudo_setorial_2017-2018.pdf")
@@ -129,6 +130,24 @@ ifpr_sfb_2015 <- "https://github.com/maykongpedro/2021-06-17-tcc-curso-r-faxina-
 
 download.file(url = ifpr_sfb_2015, destfile = "./data/PR_IFPR_SFB_2015.rds")
 
+
+
+
+# 05 - Mapeamentos de Santa Catarina - ACR --------------------------------
+
+# ACR - ANUÁRIO ESTATÍSTICO 2019
+# Pode ser obtido na página de publicações da ACR, pelo seguinte link:
+# http://www.acr.org.br/biblioteca.php?pageNumber=5
+
+# O pdf em si consta no seguinte link:
+
+acr_anuario_est_2019 <- "http://www.acr.org.br/uploads/biblioteca/Anuario_ACR_2019_atualizado.pdf"
+
+
+# extraindo e salvando apenas a página que será utilizada
+pdftools::pdf_subset(acr_anuario_est_2019, 
+                     pages = 31, 
+                     output = "./data-raw/pdf/03-SC/acr_anuario_estatistico_2019.pdf")
 
 
 
