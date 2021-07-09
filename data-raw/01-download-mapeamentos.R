@@ -166,3 +166,14 @@ ageflor_relatorio_2020 <- "http://www.ageflor.com.br/noticias/wp-content/uploads
 pdftools::pdf_subset(ageflor_relatorio_2020, 
                      pages = c(20, 24, 28, 31:33), 
                      output = "./data-raw/pdf/04-RS/ageflor_setor_florestal_2020.pdf")
+
+
+# AGEFLOR - SETOR DE BASE FLORESTAL NO RS 2017
+# Pode ser obtido pelo seguinte link:
+
+ageflor_relatorio_2017 <- "http://www.ageflor.com.br/noticias/wp-content/uploads/2017/08/A-INDUSTRIA-DE-BASE-FLORESTAL-NO-RS-2017.pdf"
+
+# extraindo e salvando apenas as páginas que seram utilizadas
+pdftools::pdf_subset(ageflor_relatorio_2017, 
+                     pages = c(17, 20, 25, 27,29, 31), 
+                     output = "./data-raw/pdf/04-RS/ageflor_setor_florestal_2017.pdf")
