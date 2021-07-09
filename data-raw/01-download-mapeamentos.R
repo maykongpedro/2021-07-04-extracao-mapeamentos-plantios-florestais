@@ -151,5 +151,18 @@ pdftools::pdf_subset(acr_anuario_est_2019,
 
 
 
+# 06 - Mapeamentos do Rio Grande do Sul - AGEFLOR -------------------------
+
+# Os relatórios da AGEFLOR podem ser encontrados no site da organização:
+# http://www.ageflor.com.br/dados
+
+# AGEFLOR - SETOR DE BASE FLORESTAL NO RS 2020
+# Pode ser obtido pelo seguinte link:
+
+ageflor_relatorio_2020 <- "http://www.ageflor.com.br/noticias/wp-content/uploads/2020/12/O-Setor-de-Base-Florestal-no-Rio-Grande-do-Sul-2020-ano-base-2019.pdf"
 
 
+# extraindo e salvando apenas as páginas que seram utilizadas
+pdftools::pdf_subset(ageflor_relatorio_2020, 
+                     pages = c(20, 24, 28, 31:33), 
+                     output = "./data-raw/pdf/04-RS/ageflor_setor_florestal_2020.pdf")
