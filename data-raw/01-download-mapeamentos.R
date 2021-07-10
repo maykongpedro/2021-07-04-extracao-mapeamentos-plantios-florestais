@@ -177,3 +177,37 @@ ageflor_relatorio_2017 <- "http://www.ageflor.com.br/noticias/wp-content/uploads
 pdftools::pdf_subset(ageflor_relatorio_2017, 
                      pages = c(17, 20, 25, 27,29, 31), 
                      output = "./data-raw/pdf/04-RS/ageflor_setor_florestal_2017.pdf")
+
+
+
+
+# 07 - Mapeamentos do Mato Grosso - FAMATO --------------------------------
+# FAMATO: Federação da Agricultura e Pecuária do Estado de Mato Grosso
+
+# FAMATO - Diagnóstico de Florestas Plantadas 2013
+# Pode ser obtido no site da AREFLORESTA (Associação de Reflorestadores do Mato Grosso)
+# pelo seguite link:
+
+femato_diag_flor_plant_2013 <- "http://www.arefloresta.org.br/uploads/downloads/00072201414739.pdf"
+
+# extraindo e salvando apenas as páginas que seram utilizadas
+pdftools::pdf_subset(femato_diag_flor_plant_2013, 
+                     pages = c(103:105), 
+                     output = "./data-raw/pdf/05-MT/femato_diagnostico_florestas_plantadas_2013.pdf")
+
+
+
+# 08 - Mapeamento do Mato Grosso - AREFLORESTA ----------------------------
+
+# AREFLORESTA - Diagnóstico de Plantações Florestais 2007
+# Pode ser obtido no site da AREFLORESTA pelo seguinte link:
+
+arefloresta_disg_plant_flor_2007 <- "http://www.arefloresta.org.br/uploads/downloads/0001522012113335.pdf"
+
+# extraindo e salvando apenas as páginas que seram utilizadas
+pdftools::pdf_subset(arefloresta_disg_plant_flor_2007, 
+                     pages = c(15:18, 20, 23, 25:27), 
+                     output = "./data-raw/pdf/05-MT/agefloresta_diagnostico_plantacoes_florestais_2007.pdf")
+
+
+
