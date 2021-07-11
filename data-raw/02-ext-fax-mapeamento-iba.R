@@ -3,7 +3,7 @@
 # Carregar e instalar pacotes ---------------------------------------------
 
 # if(!require("pacman")) install.packages("pacman")
-# pacman::p_load(tidyverse, tabulizer, purrr, janitor)
+# pacman::p_load(tidyverse, readr tabulizer, purrr, janitor)
 
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
@@ -20,6 +20,10 @@ iba_relatorio_2020  <- tabulizer::extract_tables(filepath_iba_relatorio_2020,
                                                  method = "stream")
 
 
+# Faxinar e organizar tabela - Eucalipto ----------------------------------
+
+options(scipen = 999)
+loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
 iba_relatorio_2020 %>% 
     
     # obter apenas o primeiro item da lista
@@ -40,6 +44,114 @@ iba_relatorio_2020 %>%
     # ajustar nomes das colunas
     janitor::clean_names() %>% 
     
-    # separar primeira coluna
+    # ajustar primeira coluna
+    dplyr::mutate(
+
+        # extrair somente os números de 2009
+        x2009 = stringr::str_remove_all(state_2009, "[:alpha:]"),
+        
+        # deixar soemnte as letras na coluna
+        state_2009 = stringr::str_remove_all(state_2009, "[0-9]|\\."),
+        
+        # ajustar nome dos estados
+        state_2009 = dplyr::case_when(
+            state_2009 == "Mato Grosso  " ~ "Mato Grosso do Sul",
+            state_2009 == "Rio Grande  " ~ "Rio Grande do Sul",
+            state_2009 == " Santo" ~ "Espiríto Santo",
+            state_2009 == " Santo" ~ "Espiríto Santo",
+            TRUE ~ state_2009),
+        
+        # retirar nomes sem sentido
+        state_2009 = dplyr::case_when(
+            state_2009 == "do Sul" ~ NA_character_,
+            state_2009 == "Espírito" ~ NA_character_,
+            state_2009 == "Santa" ~ NA_character_,
+            state_2009 == "Catarina" ~ NA_character_,
+            state_2009 == "Outros*" ~ NA_character_,
+            state_2009 == "Other*" ~ NA_character_,
+            TRUE ~ state_2009),
+        
+        # cria um identificador para cada linha
+        id = dplyr::row_number(),
+        
+        # ajusta estado da linha 18 e 22
+        state_2009 = dplyr::case_when(
+            id == 18 ~ "Santa Catarina",
+            id == 22 ~ "Outros",
+            TRUE ~ state_2009
+        )
+        
+    ) %>% 
     
+    # substituir o que é vazio por NA
+    dplyr::mutate(dplyr::across(dplyr::everything(),
+                                dplyr::na_if, "")) %>% 
+    
+    # retirar as linhas com NA
+    tidyr::drop_na() %>% 
+    
+    # remover coluna de id
+    dplyr::select(-id) %>% 
+    
+    # transpor base para ajustar linha 1
+    t() %>%
+    
+    # converter novamente em tibble
+    tibble::as_tibble(rownames = "nome_colunas") %>%
+    
+    # separar coluna que representa a linha 1
+    tidyr::separate(col = 2,
+                    into = c("mg", "sp"),
+                    sep = " ") %>% 
+    
+    # transpor novamente
+    t() %>% 
+    
+    # converter em tibble
+    tibble::as_tibble() %>% 
+    
+    # ajustar nome das colunas
+    janitor::row_to_names(row_number = 1) %>% 
+
+    # ajustar nomes dos estados
+    dplyr::mutate(
+        state_2009 = dplyr::case_when(
+            state_2009 == "Minas" ~ "Minas Gerais",
+            state_2009 == "Gerais" ~ "São Paulo",
+            TRUE ~ state_2009),
+        
+        state_2009 = stringr::str_squish(state_2009)
+    ) %>% 
+    
+    # re-organizar ordem das colunas
+    dplyr::relocate(x2009, .before = "x2010") %>% 
+    
+    # ajustar tipos das colunas
+    dplyr::mutate(
+        dplyr::across(.cols = x2009:x2019,
+                      readr::parse_number, locale = loc)
+    ) %>% 
+    
+    # preencher manualmente o que se perdeu na extração
+    dplyr::mutate(
+        x2009 = dplyr::case_when(
+            state_2009 == "Minas Gerais" ~ 1300000,
+            state_2009 == "São Paulo" ~ 1029670,
+            TRUE ~ x2009
+        ),
+        
+        x2019 = dplyr::case_when(
+            state_2009 == "Minas Gerais" ~ 1920329,
+            state_2009 == "São Paulo" ~ 1215901,
+            TRUE ~ x2019
+        )
+    ) %>% 
+
+    tibble::view()
+
+
+
+
+
+
 
