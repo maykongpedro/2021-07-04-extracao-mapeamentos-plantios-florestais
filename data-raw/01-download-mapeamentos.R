@@ -9,6 +9,11 @@
 # porém dentro desse script explico como eles foram obtidos
 
 
+# 00 - Carregar e instalar pacotes ----------------------------------------
+# if(!require("pacman")) install.packages("pacman")
+# pacman::p_load(pdftools)
+
+
 # 01 - Mapeamentos do Brasil - IBÁ ----------------------------------------
 
 # IBÁ - RELATÓRIO 2020
