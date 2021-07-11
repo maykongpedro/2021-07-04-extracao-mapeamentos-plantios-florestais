@@ -22,9 +22,14 @@ iba_relatorio_2020  <- tabulizer::extract_tables(filepath_iba_relatorio_2020,
 
 # Faxinar e organizar tabela - Eucalipto ----------------------------------
 
+# exibir números sem notação científica
 options(scipen = 999)
+
+# variável auxiliar para transformação de tipos de colunas
 loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
-iba_relatorio_2020 %>% 
+
+
+tbl_iba_eucalito <- iba_relatorio_2020 %>% 
     
     # obter apenas o primeiro item da lista
     purrr::pluck(1) %>% 
@@ -43,14 +48,14 @@ iba_relatorio_2020 %>%
     
     # ajustar nomes das colunas
     janitor::clean_names() %>% 
-    
+
     # ajustar primeira coluna
     dplyr::mutate(
 
         # extrair somente os números de 2009
         x2009 = stringr::str_remove_all(state_2009, "[:alpha:]"),
         
-        # deixar soemnte as letras na coluna
+        # deixar somente as letras na coluna
         state_2009 = stringr::str_remove_all(state_2009, "[0-9]|\\."),
         
         # ajustar nome dos estados
@@ -82,10 +87,17 @@ iba_relatorio_2020 %>%
         )
         
     ) %>% 
-    
+        
     # substituir o que é vazio por NA
     dplyr::mutate(dplyr::across(dplyr::everything(),
                                 dplyr::na_if, "")) %>% 
+    
+    # substitui o NA do Paraná em 2019 para não perder a linha
+    dplyr::mutate(
+        x2019 = dplyr::case_when(
+            state_2009 == "Paraná" ~ "266.473",
+            TRUE ~ x2019)
+        ) %>% 
     
     # retirar as linhas com NA
     tidyr::drop_na() %>% 
@@ -147,9 +159,28 @@ iba_relatorio_2020 %>%
         )
     ) %>% 
 
-    tibble::view()
+    # retirar linha de total
+    dplyr::filter(state_2009 != "Total") %>% 
+    
+    # renomear coluna de estado
+    dplyr::rename(estado = "state_2009") %>% 
+    
+    # pivotar base
+    tidyr::pivot_longer(cols = x2009:x2019,
+                        names_to = "anos",
+                        values_to = "area_ha") %>% 
+    
+    # retirar o "x" dos anos
+    dplyr::mutate(
+        anos = stringr::str_remove_all(anos, "x"),
+        anos = as.double(anos)
+        )
 
 
+# Conferir o somatório dos anos
+tbl_iba_eucalito %>% 
+    dplyr::group_by(anos) %>% 
+    dplyr::summarise(area_total = sum(area_ha))
 
 
 
