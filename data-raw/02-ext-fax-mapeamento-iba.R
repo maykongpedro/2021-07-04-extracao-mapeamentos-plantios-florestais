@@ -271,9 +271,81 @@ tbl_iba_pinus %>%
 
 # Faxinar e organizar tabela - Outros -------------------------------------
 
-#tbl_iba_outros<-
-    iba_relatorio_2020 %>% 
+tbl_iba_outros<-
+    iba_relatorio_2020 %>%
     
     # obter apenas o terceiro item da lista
-    purrr::pluck(3) 
+    purrr::pluck(3) %>%
+    
+    # transformar em tibble
+    tibble::as_tibble(.name_repair = "unique") %>%
+    
+    # selecionar as colunas que são da tabela de outros
+    dplyr::select(2) %>% 
+    
+    # retirar linhas desnecessárias
+    dplyr::slice(-c(1:5)) %>% 
+    
+    # renomear coluna inicial
+    dplyr::rename(estado = 1) %>% 
+    
+    # extraindo apenas os números das colunas
+    dplyr::mutate(
+        valores = stringr::str_remove_all(estado, "[:alpha:]|\\*|\\|"),
+        valores = stringr::str_squish(valores),
+        estado = stringr::str_remove_all(estado, "[0-9]|\\.|\\*"),
+    ) %>% 
+    
+    # seperando valores em outras colunas
+    tidyr::separate(col = valores,
+                    into = c("2014", "2015", "2016", "2017", "2018"),
+                    sep = " ") %>% 
+    
+    # remover linhas com NA
+    tidyr::drop_na() %>% 
+    
+    # ajustar nomes dos estados
+    dplyr::mutate(
+        estado = stringr::str_squish(estado),
+        estado = dplyr::case_when(
+            estado == "Pará Sul" ~ "Pará",
+            estado == "São Paulo Paraná" ~ "São Paulo",
+            estado == "Paraná Rio Grande" ~ "Paraná",
+            estado == "Bahia Santa Catarina" ~ "Bahia",
+            estado == "Tocantins Centro-Oeste" ~ "Tocantins",
+            estado == "Goiás Goiás" ~ "Goiás",
+            estado == "Mato Grosso do Sul Mato Grosso" ~ "Mato Grosso do Sul",
+            estado == "Minas Gerais do Sul" ~ "Minas Gerais",
+            estado == "Outros | Other Other species" ~ "Outros",
+            TRUE ~ estado
+        )
+    ) %>% 
+    
+    # ajustar tipos das colunas
+    dplyr::mutate(
+        dplyr::across(.cols = '2014':'2018',
+                      readr::parse_number, locale = loc)
+    ) %>% 
+    
+    # pivotar base
+    tidyr::pivot_longer(cols = '2014':'2018',
+                        names_to = "anos",
+                        values_to = "area_ha") %>% 
+    
+    # retirar totais
+    dplyr::filter(estado != "Total Brasil") %>% 
+    
+    # adicionar coluna identificadora de gênero
+    dplyr::mutate(genero = "Outros")
+
+
+# Conferir o somatório dos anos
+tbl_iba_outros %>% 
+    dplyr::group_by(anos) %>% 
+    dplyr::summarise(area_total = sum(area_ha))
+
+
+
+# Consolidar tabela final -------------------------------------------------
+
 
