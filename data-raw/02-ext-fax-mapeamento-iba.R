@@ -174,7 +174,10 @@ tbl_iba_eucalito <- iba_relatorio_2020 %>%
     dplyr::mutate(
         anos = stringr::str_remove_all(anos, "x"),
         anos = as.double(anos)
-        )
+        ) %>% 
+    
+    # adicionar coluna identificadora de gênero
+    dplyr::mutate(genero = "Eucalyptus")
 
 
 # Conferir o somatório dos anos
@@ -184,11 +187,11 @@ tbl_iba_eucalito %>%
 
 
 
-# # Faxinar e organizar tabela - Pinus ------------------------------------
+# Faxinar e organizar tabela - Pinus --------------------------------------
 
 tbl_iba_pinus<- iba_relatorio_2020 %>% 
     
-    # obter apenas o primeiro item da lista
+    # obter apenas o segundo item da lista
     purrr::pluck(2) %>% 
     
     # transformar em tibble
@@ -218,10 +221,8 @@ tbl_iba_pinus<- iba_relatorio_2020 %>%
     
     # separar coluna do estado
     dplyr::mutate(
-        
         x2009 = stringr::str_remove_all(estado, "[:alpha:]|\\*|\\|"),
         estado = stringr::str_remove_all(estado, "[0-9]|\\.")
-        
     ) %>% 
     
     # separar coluna de 2011 e 2012
@@ -255,7 +256,10 @@ tbl_iba_pinus<- iba_relatorio_2020 %>%
     dplyr::mutate(
         anos = stringr::str_remove_all(anos, "x"),
         anos = as.double(anos)
-    )  
+    ) %>% 
+
+    # adicionar coluna identificadora de gênero
+    dplyr::mutate(genero = "Pinus")
 
 
 # Conferir o somatório dos anos
@@ -263,4 +267,13 @@ tbl_iba_pinus %>%
     dplyr::group_by(anos) %>% 
     dplyr::summarise(area_total = sum(area_ha))
 
+
+
+# Faxinar e organizar tabela - Outros -------------------------------------
+
+#tbl_iba_outros<-
+    iba_relatorio_2020 %>% 
+    
+    # obter apenas o terceiro item da lista
+    purrr::pluck(3) 
 
