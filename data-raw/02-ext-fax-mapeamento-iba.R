@@ -184,5 +184,83 @@ tbl_iba_eucalito %>%
 
 
 
+# # Faxinar e organizar tabela - Pinus ------------------------------------
+
+tbl_iba_pinus<- iba_relatorio_2020 %>% 
+    
+    # obter apenas o primeiro item da lista
+    purrr::pluck(2) %>% 
+    
+    # transformar em tibble
+    tibble::as_tibble(.name_repair = "unique") %>%
+    
+    # selecionar as colunas que são da tabela de pinus
+    dplyr::select(1:9, 11) %>% 
+    
+    # transformar a primeira linha em nome da coluna
+    janitor::row_to_names(row_number = 1) %>% 
+    
+    # ajustar nomes das colunas
+    janitor::clean_names() %>% 
+    
+    # selecionar apenas as linhas correspondentes à tabela
+    dplyr::slice(1:12) %>% 
+    
+    # substituir o que é vazio por NA
+    dplyr::mutate(dplyr::across(dplyr::everything(),
+                                dplyr::na_if, "")) %>% 
+    
+    # retirar as linhas com NA
+    tidyr::drop_na() %>%
+    
+    # renomear coluna de estado
+    dplyr::rename(estado = "estado_state_2009") %>% 
+    
+    # separar coluna do estado
+    dplyr::mutate(
+        
+        x2009 = stringr::str_remove_all(estado, "[:alpha:]|\\*|\\|"),
+        estado = stringr::str_remove_all(estado, "[0-9]|\\.")
+        
+    ) %>% 
+    
+    # separar coluna de 2011 e 2012
+    tidyr::separate(col = "x2011_2012",
+                    into = c("x2011", "x2012"),
+                    sep = " ") %>% 
+    
+    # re-organizar ordem das colunas
+    dplyr::relocate(x2009, .before = "x2010") %>% 
+    
+    # ajustar nome de outros
+    dplyr::mutate(
+        estado = dplyr::case_when(
+            estado == "Outros* | Other* " ~ "Outros",
+            TRUE ~ estado
+        )
+    ) %>% 
+    
+    # ajustar tipos das colunas
+    dplyr::mutate(
+        dplyr::across(.cols = x2009:x2019,
+                      readr::parse_number, locale = loc)
+    ) %>% 
+    
+    # pivotar base
+    tidyr::pivot_longer(cols = x2009:x2019,
+                        names_to = "anos",
+                        values_to = "area_ha") %>% 
+    
+    # retirar o "x" dos anos
+    dplyr::mutate(
+        anos = stringr::str_remove_all(anos, "x"),
+        anos = as.double(anos)
+    )  
+
+
+# Conferir o somatório dos anos
+tbl_iba_pinus %>% 
+    dplyr::group_by(anos) %>% 
+    dplyr::summarise(area_total = sum(area_ha))
 
 
