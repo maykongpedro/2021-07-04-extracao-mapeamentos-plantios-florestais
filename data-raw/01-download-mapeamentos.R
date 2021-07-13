@@ -35,11 +35,19 @@ pdftools::pdf_subset(iba_relatorio_2020,
 
 iba_historico_csv <- "http://homolog-dados.mma.gov.br/pt_BR/dataset/ffd9ab35-5719-4ec1-8d13-ae8f738bebc2/resource/43251bd6-e2c9-4dc8-93c9-379bf15e29d9/download/rf_florestasplantadas_iba_2006-2016.csv"
 
-# preciso descobri o enconding
-readr::read_csv2(file = iba_historico_csv,)
+# Descobrir o enconding para abrir corretamente
+readr::guess_encoding(iba_historico_csv)
+
+# Abrindo o arquivo diretamente da internet
+iba_historico_sfb <- read.delim(file = iba_historico_csv,
+                                fileEncoding = "ISO-8859-1",
+                                sep = ";",
+                                header = TRUE)
 
 
-# exportando base que será utilizada
+# Exportando base que será utilizada
+readr::write_csv2(iba_historico_sfb,
+                  file = "data-raw/csv/iba_historico_florestas_plantadas_2006-2016.csv")
 
 
 
@@ -54,12 +62,21 @@ readr::read_csv2(file = iba_historico_csv,)
 
 url_ibge_historico <- "http://homolog-dados.mma.gov.br/pt_BR/dataset/ffd9ab35-5719-4ec1-8d13-ae8f738bebc2/resource/fdf7e4ce-8475-4205-8aad-3f97665b8a41/download/rf_florestasplantadas_ibge_2014-2016.csv"
 
-# preciso descobri o enconding
-readr::read_csv(file = url_ibge_historico)
+# Descobrir o enconding para abrir corretamente
+readr::guess_encoding(url_ibge_historico)
 
 
-# exportando base que será utilizada
 
+# Abrindo o arquivo diretamente da internet
+url_ibge_historico <- read.delim(file = url_ibge_historico,
+                                 fileEncoding = "ISO-8859-1",
+                                 sep = ";",
+                                 header = TRUE)
+
+
+# Exportando base que será utilizada
+readr::write_csv2(url_ibge_historico,
+                  file = "data-raw/csv/ibge_florestas_plantadas_2014-2016.csv")
 
 
 
