@@ -335,8 +335,12 @@ tbl_iba_outros<-
     # retirar totais
     dplyr::filter(estado != "Total Brasil") %>% 
     
+    # corrigir tipo da coluna anos
+    dplyr::mutate(anos = as.double(anos)) %>% 
+    
     # adicionar coluna identificadora de gênero
     dplyr::mutate(genero = "Outros")
+    
 
 
 # Conferir o somatório dos anos
@@ -347,5 +351,42 @@ tbl_iba_outros %>%
 
 
 # Consolidar tabela final -------------------------------------------------
+
+# gerar vetores auxiliares para fonte de dados
+poyry <- 2009:2017
+fgv <- 2018:2019
+
+tbl_iba_relatorio_2020 <-
+    tbl_iba_eucalito %>% 
+    
+    # join
+    dplyr::left_join(tbl_iba_pinus) %>% 
+    dplyr::left_join(tbl_iba_outros) %>% 
+    
+    # add fonte de dados
+    dplyr::mutate(
+        
+        fonte = dplyr::case_when(anos %in% poyry ~ "Pöyry e IBÁ",
+                                 anos %in% fgv ~ "FGV e IBÁ",
+                                 TRUE ~ "ND"),
+        
+        mapeamento = "IBÁ - Relatório Anual 2020"
+        
+    ) %>% 
+    
+    # trocar nome da coluna 'anos'
+    dplyr::rename(ano_base = "anos") %>% 
+    
+    # organizando colunas
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  estado,
+                  genero,
+                  area_ha)
+
+
+# Salvar tabela final -----------------------------------------------------
+tbl_iba_relatorio_2020 %>% saveRDS("./data/BR_IBA_RELATORIO_2020.rds")
 
 
