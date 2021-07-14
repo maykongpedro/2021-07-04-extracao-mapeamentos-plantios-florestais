@@ -233,3 +233,21 @@ pdftools::pdf_subset(arefloresta_disg_plant_flor_2007,
 
 
 
+# 09 - Bases adicionais ---------------------------------------------------
+
+# Base de estados e unidades federativas
+# obter base de estados + ufs
+base_ufs <- geobr::read_state()
+
+ibge_uf_estados <- 
+    base_ufs %>% 
+    tibble::tibble() %>% 
+    dplyr::select(abbrev_state , name_state, -geom) %>% 
+    dplyr::rename(uf = "abbrev_state",
+                  estado = "name_state")
+
+# salvar base
+saveRDS(ibge_uf_estados, 
+        file = "data/AUX_IBGE_UF_ESTADOS.RDS")
+
+
