@@ -3,10 +3,19 @@
 # Carregar e instalar pacotes ---------------------------------------------
 
 # if(!require("pacman")) install.packages("pacman")
-# pacman::p_load(tidyverse, readr tabulizer, purrr, janitor)
+# pacman::p_load(tidyverse, readr, tabulizer, purrr, janitor)
 
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
+
+# Importar csv ------------------------------------------------------------
+
+iba_hist_2006_2016 <- readr::read_csv2("data-raw/csv/iba_historico_florestas_plantadas_2006-2016.csv")
+
+iba_hist_2006_2016 <- iba_hist_2006_2016 %>% 
+    janitor::clean_names()
+
+iba_hist_2006_2016
 
 
 # Importar pdfs -----------------------------------------------------------
@@ -15,9 +24,51 @@
 filepath_iba_relatorio_2020 <- "data-raw/pdf/01-Brasil/01-IBA/relatorio_iba_2020.pdf"
 
 
-# Extrair tableas das páginas
+# Extrair tabelas das páginas
 iba_relatorio_2020  <- tabulizer::extract_tables(filepath_iba_relatorio_2020,
                                                  method = "stream")
+
+
+
+# Organizar tabela csv ----------------------------------------------------
+
+iba_hist_2006_2016 %>% 
+    dplyr::distinct(cultura, especie)
+
+
+tbl_iba_hist_2006_2016 <- iba_hist_2006_2016 %>%
+    
+    # ajustar colunas
+    dplyr::mutate(
+        ano = lubridate::dmy(ano),
+        ano_base = lubridate::year(ano),
+        mapeamento = "IBÁ - Não identificado",
+        fonte = "IBÁ - Dados disponibilizados pelo SNIF",
+        genero = cultura
+    ) %>%
+    
+    # padronizar infos
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "Eucalipto" ~ "Eucalyptus",
+            genero == "Outras culturas" ~ "Outros",
+            TRUE ~ genero
+        )
+    ) %>%
+    
+    # selecionar a ordem
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  estado,
+                  genero,
+                  especie,
+                  area_ha)
+
+
+# Salvar tabela historico -------------------------------------------------
+tbl_iba_hist_2006_2016 %>% saveRDS("./data/BR_IBA_SNIF_HISTORICO_2006_2016.rds")
+
 
 
 # Faxinar e organizar tabela - Eucalipto ----------------------------------
@@ -349,7 +400,6 @@ tbl_iba_outros %>%
     dplyr::summarise(area_total = sum(area_ha))
 
 
-
 # Consolidar tabela final -------------------------------------------------
 
 # gerar vetores auxiliares para fonte de dados
@@ -359,9 +409,9 @@ fgv <- 2018:2019
 tbl_iba_relatorio_2020 <-
     tbl_iba_eucalito %>% 
     
-    # join
-    dplyr::left_join(tbl_iba_pinus) %>% 
-    dplyr::left_join(tbl_iba_outros) %>% 
+    # empilhar bases
+    dplyr::bind_rows(tbl_iba_pinus) %>% 
+    dplyr::bind_rows(tbl_iba_outros) %>% 
     
     # add fonte de dados
     dplyr::mutate(
