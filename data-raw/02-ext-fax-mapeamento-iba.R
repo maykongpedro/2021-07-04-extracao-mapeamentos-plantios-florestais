@@ -66,8 +66,27 @@ tbl_iba_hist_2006_2016 <- iba_hist_2006_2016 %>%
                   area_ha)
 
 
+# adicionar coluna de uf
+uf_estados <- readr::read_rds("data/AUX_IBGE_UF_ESTADOS.RDS")
+
+tbl_iba_hist_2006_2016_fim <- tbl_iba_hist_2006_2016 %>% 
+    dplyr::left_join(uf_estados) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  genero,
+                  area_ha) 
+
+# verificando itens nao encontrados
+tbl_iba_hist_2006_2016_fim %>% 
+    dplyr::distinct(uf,estado)
+
+
+    
 # Salvar tabela historico -------------------------------------------------
-tbl_iba_hist_2006_2016 %>% saveRDS("./data/BR_IBA_SNIF_HISTORICO_2006_2016.rds")
+tbl_iba_hist_2006_2016_fim %>% saveRDS("./data/BR_IBA_SNIF_HISTORICO_2006_2016.rds")
 
 
 
@@ -436,7 +455,22 @@ tbl_iba_relatorio_2020 <-
                   area_ha)
 
 
+# adicionar coluna de uf
+tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>% 
+    dplyr::left_join(uf_estados) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  genero,
+                  area_ha) 
+
+
+tbl_iba_relatorio_2020_fim %>% tibble::view()
+
+
 # Salvar tabela final -----------------------------------------------------
-tbl_iba_relatorio_2020 %>% saveRDS("./data/BR_IBA_RELATORIO_2020.rds")
+tbl_iba_relatorio_2020_fim %>% saveRDS("./data/BR_IBA_RELATORIO_2020.rds")
 
 
