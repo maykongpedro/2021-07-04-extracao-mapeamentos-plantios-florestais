@@ -11,7 +11,7 @@
 
 # 00 - Carregar e instalar pacotes ----------------------------------------
 # if(!require("pacman")) install.packages("pacman")
-# pacman::p_load(pdftools)
+# pacman::p_load(tidyverse, pdftools, geobr)
 
 
 # 01 - Mapeamentos do Brasil - IBÁ ----------------------------------------
@@ -250,10 +250,11 @@ ibge_uf_estados <-
             estado == "Rio Grande Do Norte" ~ "Rio Grande do Norte",
             estado == "Rio Grande Do Sul" ~ "Rio Grande do Sul",
             estado == "Mato Grosso Do Sul" ~ "Mato Grosso do Sul",
+            estado == "Espirito Santo" ~ "Espírito Santo",
             TRUE ~ estado
         )
     )
-
+ibge_uf_estados %>% tibble::view()
 
 # salvar base
 saveRDS(ibge_uf_estados, 

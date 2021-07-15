@@ -2,7 +2,7 @@
 # Carregar e instalar pacotes ---------------------------------------------
 
 # if(!require("pacman")) install.packages("pacman")
-# pacman::p_load(tidyverse, readr, tabulizer, purrr, janitor)
+# pacman::p_load(tidyverse, tabulizer, janitor)
 
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
@@ -105,7 +105,7 @@ tbl_ibge_2018 <- ibge_2018 %>%
     ) 
     
 
-# trazer os nomes dos estados  
+# Trazer os nomes dos estados  
 
 # abrir base de estados + ufs
 uf_estados <- readr::read_rds("data/AUX_IBGE_UF_ESTADOS.RDS")
