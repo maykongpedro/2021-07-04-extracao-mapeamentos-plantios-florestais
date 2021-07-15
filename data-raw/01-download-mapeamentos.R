@@ -244,7 +244,16 @@ ibge_uf_estados <-
     tibble::tibble() %>% 
     dplyr::select(abbrev_state , name_state, -geom) %>% 
     dplyr::rename(uf = "abbrev_state",
-                  estado = "name_state")
+                  estado = "name_state") %>% 
+    dplyr::mutate(
+        estado = dplyr::case_when(
+            estado == "Rio Grande Do Norte" ~ "Rio Grande do Norte",
+            estado == "Rio Grande Do Sul" ~ "Rio Grande do Sul",
+            estado == "Mato Grosso Do Sul" ~ "Mato Grosso do Sul",
+            TRUE ~ estado
+        )
+    )
+
 
 # salvar base
 saveRDS(ibge_uf_estados, 
