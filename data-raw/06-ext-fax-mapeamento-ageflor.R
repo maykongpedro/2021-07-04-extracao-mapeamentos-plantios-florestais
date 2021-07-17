@@ -464,6 +464,99 @@ tabs_ageflor_2020_geral <-
                ~ faxinar_ageflor_2020_geral(ageflor_2020, .x))
 
 
+# Limpar tabela de histórico
+tab_historico_ageflor2020 <- tabs_ageflor_2020_geral %>% 
+    purrr::pluck(1) %>% 
+    
+    # corrigir o valor não capturado em 2010
+    dplyr::mutate(
+        acacia = dplyr::case_when(ano == "2010" ~ 89.9,
+                                 TRUE~ acacia)
+    ) %>% 
+    
+    # retirar coluna desnecessária
+    dplyr::select(-total) %>% 
+    
+    # pivotar
+    tidyr::pivot_longer(cols = eucalipto:acacia,
+                       names_to = "genero",
+                       values_to = "area_ha") %>% 
+    
+    # ajustar área e gêneros
+    dplyr::mutate(
+        area_ha = area_ha*1000,
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            TRUE ~ genero
+        )
+    ) %>% 
+    
+    # renomear coluna
+    dplyr::rename(ano_base = "ano") %>% 
+    
+    # adicionar infos complementares
+    dplyr::mutate(
+        fonte = "Fepam, Codex, RDK e AGEFLOR",
+        mapeamento = "AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  genero,
+                  area_ha) 
+
+# Conferir totais
+tab_historico_ageflor2020 %>% 
+    dplyr::group_by(ano_base) %>% 
+    dplyr::summarise(area = sum(area_ha))
+
+
+
+# Limpar tabela de COREDES
+tab_coredes_ageflor2020 <- tabs_ageflor_2020_geral %>% 
+    purrr::pluck(2) %>% 
+    dplyr::select(-total) %>% 
+    tidyr::pivot_longer(cols = pinus:acacia,
+                        names_to = "genero",
+                        values_to = "area_ha") %>%
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            TRUE ~ genero
+        )
+    ) %>% 
+    # adicionar infos complementares
+    dplyr::mutate(
+        fonte = "Fepam, Codex, RDK e AGEFLOR",
+        mapeamento = "AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020",
+        ano_base = "2019",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  corede,
+                  genero,
+                  area_ha) 
+
+# Conferir totais
+tab_coredes_ageflor2020 %>% 
+    dplyr::group_by(corede) %>% 
+    dplyr::summarise(area = sum(area_ha))
+
+
+
 # Faxinar e organizar tabela do pdf - 2020 - Tabelas municípios -----------
 
 # Organizar as tabelas de municípios
@@ -473,7 +566,7 @@ tabs_ageflor_2020_muni <-
 
 
 # Adicionando infos complementares e corrigindo gêneros
-tabs_ageflor_2020_muni_final <- tabs_ageflor_2020_muni %>% 
+tab_municipios_ageflor2020<- tabs_ageflor_2020_muni %>% 
     dplyr::mutate(
         fonte = "Fepam, Codex, RDK e AGEFLOR",
         mapeamento = "AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020",
@@ -500,7 +593,12 @@ tabs_ageflor_2020_muni_final <- tabs_ageflor_2020_muni %>%
                   genero,
                   area_ha) 
 
+# Conferir totais
+tab_municipios_ageflor2020
+
 
 # Salvar tabela final do pdf ----------------------------------------------
 
-
+tab_coredes_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2020.RDS")
+tab_historico_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_COREDES_2020.RDS")
+tab_municipios_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2020.RDS")
