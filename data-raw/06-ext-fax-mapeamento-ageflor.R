@@ -29,7 +29,7 @@ ageflor_2020
 
 
 
-# Faxinar e organizar tabela do pdf - 2017 --------------------------------
+# Faxinar e organizar tabela do pdf - 2017 - Tabela Geral -----------------
 
 # Manipular tabela
 # Para resolver essas faxinas com stringr recorri à ajuda no fórum da curso R:
@@ -108,10 +108,124 @@ tbl_geral_ageflor_2017 %>%
 
 
 
-# Faxinar e organizar tabela do pdf - 2020 --------------------------------
+# Faxinar e organizar tabela do pdf - 2017 - Tabela Coredes ---------------
 
 # Variável auxiliar para transformação de tipos de colunas
 loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
+
+tbl_coredes_ageflor_2017 <- ageflor_2017 %>% 
+    
+    purrr::pluck(2) %>%
+    
+    # dotall para permitir que o ponto capture qualquer coisa, inclusiva o \n
+    stringr::str_extract(stringr::regex("Tabela [0-9.]+.+", dotall = TRUE)) %>% 
+    
+    # separar cada linha gerando uma lista
+    stringr::str_split("\n") %>% 
+    
+    # pegar o item da lista
+    purrr::pluck(1) %>% 
+    
+    # capturar apenas os números
+    stringr::str_subset("[0-9.]+ [0-9. ]+$") %>% 
+    
+    # pegar cada sub-item gerado
+    purrr::map(purrr::pluck, 1) %>% 
+    
+    # transformar em tibble
+    dplyr::as_tibble(.name_repair = "unique") %>% 
+    
+    # pivotar
+    tidyr::pivot_longer(cols = dplyr::everything(), 
+                        names_to = "trash",
+                        values_to = "colunas") %>% 
+    
+    # gerar coluna com apenas os números e coredes
+    dplyr::mutate(
+        areas = stringr::str_remove_all(colunas, "[:alpha:]"),
+        areas = stringr::str_squish(areas),
+        corede = colunas,
+        corede = stringr::str_remove_all(corede, "[0-9]|\\."),
+        corede = stringr::str_squish(corede)
+        
+    ) %>% 
+    
+    # separar colunas dos números
+    tidyr::separate(col = areas,
+                   into =  c("eucalipto", "pinus", "acacia", "total"),
+                   sep = " ") %>% 
+    
+    # remover colunas desncessárias
+    dplyr::select(-trash,
+                 -colunas,
+                 -total) %>% 
+    
+    # ajustando tipo das colunas
+    dplyr::mutate(
+        dplyr::across(.cols = eucalipto:acacia,
+                      readr::parse_number,locale = loc)
+    ) %>% 
+    
+    # muitos valores ficaram zoados por conta da quebra de linha de um corede
+    # terei que ajusar manualmente
+    dplyr::mutate(
+        
+        eucalipto = dplyr::case_when(
+            corede == "Centro-Sul" ~ 80292,
+            corede == "Campanha" ~ 33261,
+            corede == "Jaculi-centro" ~ 16000,
+            TRUE ~ eucalipto
+        ),
+        
+        pinus = dplyr::case_when(
+            corede == "Centro-Sul" ~ 4567,
+            corede == "Jaculi-centro" ~ 8825,
+            TRUE ~ pinus
+        ),
+        
+        acacia = dplyr::case_when(
+            corede == "Centro-Sul" ~ 11032,
+            corede == "Jaculi-centro" ~ 658,
+            TRUE ~ acacia
+        ),
+        
+        corede = dplyr::case_when(
+            corede == "Jaculi-centro" ~ "Jacuí-centro",
+            corede == "Vale do Cai -" ~ "Vale do Caí",
+            TRUE ~ corede
+        )
+        
+    )
+
+
+# adicionar coredes faltantes que não foram identificados por conta das quebras
+# de linha
+coredes_faltantes <- tibble::tribble(
+                          ~corede, ~eucalipto, ~pinus, ~acacia,
+         "Campos de Cima da Serra",      1024L, 42116L,      NA,
+    "Metropolitano Delta do Jacuí",     30533L,  4384L,   7169L
+    )
+
+# empilhar
+tbl_coredes_ageflor_2017_completa <- tbl_coredes_ageflor_2017 %>% 
+    dplyr::relocate(corede, .before = eucalipto) %>% 
+    dplyr::bind_rows(coredes_faltantes) %>% 
+    tidyr::pivot_longer(cols = eucalipto:acacia,
+                       names_to = "genero",
+                       values_to = "area_ha")
+
+
+tbl_coredes_ageflor_2017_completa %>% tibble::view()
+
+# verificar totais
+tbl_coredes_ageflor_2017_completa %>% 
+    dplyr::group_by(corede) %>% 
+    dplyr::summarise(area = sum(area_ha, na.rm = TRUE))
+
+
+# Faxinar e organizar tabela do pdf - 2020 --------------------------------
+
+
 
 
 
