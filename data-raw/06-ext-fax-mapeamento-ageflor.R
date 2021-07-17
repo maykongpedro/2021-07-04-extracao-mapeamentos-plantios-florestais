@@ -594,7 +594,9 @@ tab_municipios_ageflor2020<- tabs_ageflor_2020_muni %>%
                   area_ha) 
 
 # Conferir totais
-tab_municipios_ageflor2020
+tab_municipios_ageflor2020 %>% 
+    dplyr::group_by(genero) %>% 
+    dplyr::summarise(area = sum(area_ha))
 
 
 # Salvar tabela final do pdf ----------------------------------------------
