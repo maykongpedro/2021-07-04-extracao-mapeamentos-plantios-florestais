@@ -7,6 +7,10 @@
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
 
+# Carregar funções
+source("./R/01-fn-faxinar-tab-geral-ageflor-2020.R")
+source("./R/02-fn-faxinar-tab-municipios-ageflor-2020.R")
+
 
 # Importar pdfs -----------------------------------------------------------
 
@@ -319,7 +323,7 @@ tbl_muni_geral_2017 <- tbl_muni_ageflor_geral_2017 %>%
     ) 
     
     # dplyr::mutate(
-    #     fonte = "UDESC-CAV e ACR",
+    #     fonte = "Fepam, Codex, RDK e AGEFLOR",
     #     mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
     #     ano_base = "2016",
     #     uf = "RS",
@@ -437,10 +441,64 @@ ageflor_2017 %>%
 
 
 
-# Faxinar e organizar tabela do pdf - 2020 --------------------------------
+# Faxinar e organizar tabela do pdf - 2020 - Tabelas gerais ----------------
+
+# Vetor com os nomes de cada tabela
+nomes_tabs_ageflor_2020 <-  c("historico",
+                              "coredes",
+                              "muni_todos",
+                              "muni_eucalipto",
+                              "muni_pinus",
+                              "muni_acacia")
+
+# Nomear listas
+names(ageflor_2020) <- nomes_tabs_ageflor_2020
+
+# Verificar no console
+ageflor_2020
 
 
+# Organizar as duas tabelas iniciais
+tabs_ageflor_2020_geral <-
+    purrr::map(.x = nomes_tabs_ageflor_2020[1:2],
+               ~ faxinar_ageflor_2020_geral(ageflor_2020, .x))
 
+
+# Faxinar e organizar tabela do pdf - 2020 - Tabelas municípios -----------
+
+# Organizar as tabelas de municípios
+tabs_ageflor_2020_muni <-
+    purrr::map_dfr(.x = nomes_tabs_ageflor_2020[3:6],
+                   ~ faxinar_ageflor_2020_muni(ageflor_2020, .x))
+
+
+# Adicionando infos complementares e corrigindo gêneros
+tabs_ageflor_2020_muni_final <- tabs_ageflor_2020_muni %>% 
+    dplyr::mutate(
+        fonte = "Fepam, Codex, RDK e AGEFLOR",
+        mapeamento = "AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020",
+        ano_base = "2019",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            genero == "todos" ~ "Todos",
+            TRUE ~ genero
+        )
+    ) %>% 
+    
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  municipio,
+                  genero,
+                  area_ha) 
 
 
 # Salvar tabela final do pdf ----------------------------------------------
