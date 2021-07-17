@@ -8,8 +8,9 @@
 '%>%' <- magrittr::`%>%`
 
 # Carregar funções
-source("./R/01-fn-faxinar-tab-geral-ageflor-2020.R")
-source("./R/02-fn-faxinar-tab-municipios-ageflor-2020.R")
+source("./R/01-fn-empilhar-municipios-ageflor-2017.R")
+source("./R/02-fn-faxinar-tab-geral-ageflor-2020.R")
+source("./R/03-fn-faxinar-tab-municipios-ageflor-2020.R")
 
 # Variável auxiliar para transformação de tipos de colunas
 loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
