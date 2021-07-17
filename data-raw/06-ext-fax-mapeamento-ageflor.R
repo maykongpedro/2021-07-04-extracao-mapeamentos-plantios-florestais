@@ -11,6 +11,9 @@
 source("./R/01-fn-faxinar-tab-geral-ageflor-2020.R")
 source("./R/02-fn-faxinar-tab-municipios-ageflor-2020.R")
 
+# Variável auxiliar para transformação de tipos de colunas
+loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
+
 
 # Importar pdfs -----------------------------------------------------------
 
@@ -113,9 +116,6 @@ tbl_geral_ageflor_2017 %>%
 
 
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Coredes ---------------
-
-# Variável auxiliar para transformação de tipos de colunas
-loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
 
 tbl_coredes_ageflor_2017 <- ageflor_2017 %>% 
     
@@ -296,12 +296,10 @@ muni_2 <- tbl_muni_geral_2017 %>%
                  muni_1 = "muni_2")
      
 # empilhar as duas bases de muni
-tbl_muni_ageflor_geral_2017 <- dplyr::bind_rows(muni_1, muni_2)
+tbl_muni_ageflor_geral_2017 <- empilhar_muni_ageflor_2017(tbl_muni_geral_2017)
 
 # corrigir nomes dos municípios e ajustar colunas
 tbl_muni_geral_2017 <- tbl_muni_ageflor_geral_2017 %>%
-    dplyr::rename(area_ha = "area_1",
-                  municipio = "muni_1") %>% 
     dplyr::mutate(
         
         municipio = dplyr::case_when(
@@ -321,14 +319,6 @@ tbl_muni_geral_2017 <- tbl_muni_ageflor_geral_2017 %>%
         
         genero = "Todos"
     ) 
-    
-    # dplyr::mutate(
-    #     fonte = "Fepam, Codex, RDK e AGEFLOR",
-    #     mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
-    #     ano_base = "2016",
-    #     uf = "RS",
-    #     estado = "Rio Grande do Sul"
-    # ) 
 
 tbl_muni_geral_2017
 
@@ -338,8 +328,19 @@ tbl_muni_geral_2017
 
 ageflor_2017 %>% 
     
-    purrr::pluck(5)
+    purrr::pluck(5) %>% 
 
+    # dotall para permitir que o ponto capture qualquer coisa, inclusiva o \n
+    stringr::str_extract(stringr::regex("AREA +.+", dotall = TRUE)) %>% 
+    
+    # separar cada linha gerando uma lista
+    stringr::str_split("\n") %>% 
+    
+    # pegar o item da lista
+    purrr::pluck(1) %>% 
+    
+    # transformar em tibble
+    dplyr::as_tibble(.name_repair = "unique") 
 
 
 
@@ -401,7 +402,11 @@ tbl_muni_2017 <- ageflor_2017 %>%
 
 tbl_muni_2017
 
+
 # separar as colunas de municípios entre diferentes bases
+tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_2017)
+
+
 muni_1 <- tbl_muni_2017 %>% 
     dplyr::select(area_1, muni_1)
 
@@ -437,7 +442,19 @@ tbl_muni_euc_2017 <- tbl_muni_euc_ageflor_2017 %>%
 
 ageflor_2017 %>% 
     
-    purrr::pluck(6)
+    purrr::pluck(6) %>% 
+    
+    # dotall para permitir que o ponto capture qualquer coisa, inclusiva o \n
+    stringr::str_extract(stringr::regex("AREA +.+797", dotall = TRUE)) %>% 
+    
+    # separar cada linha gerando uma lista
+    stringr::str_split("\n") %>% 
+    
+    # pegar o item da lista
+    purrr::pluck(1) %>% 
+    
+    # transformar em tibble
+    dplyr::as_tibble(.name_repair = "unique") 
 
 
 
