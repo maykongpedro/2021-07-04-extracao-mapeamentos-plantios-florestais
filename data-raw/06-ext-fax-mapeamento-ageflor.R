@@ -223,6 +223,22 @@ tbl_coredes_ageflor_2017_completa %>%
     dplyr::summarise(area = sum(area_ha, na.rm = TRUE))
 
 
+
+
+# # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios ----------
+
+ageflor_2017 %>% 
+    
+    purrr::pluck(4) %>%
+    
+    # dotall para permitir que o ponto capture qualquer coisa, inclusiva o \n
+    stringr::str_extract(stringr::regex("AREA+.+", dotall = TRUE)) %>% 
+    
+    # separar cada linha gerando uma lista
+    stringr::str_split("\n")
+
+
+
 # Faxinar e organizar tabela do pdf - 2020 --------------------------------
 
 
