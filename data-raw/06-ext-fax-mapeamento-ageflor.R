@@ -377,7 +377,6 @@ tbl_muni_pinus_2017 <- ageflor_2017 %>%
 
 # empilhar as duas bases de municípios
 tbl_muni_ageflor_pinus_2017 <- empilhar_muni_ageflor_2017(tbl_muni_pinus_2017)
-tbl_muni_ageflor_pinus_2017 %>% print(n=100)
 
 # corrigir nomes dos municípios e ajustar colunas
 tbl_muni_pinus_2017_fim <- tbl_muni_ageflor_pinus_2017 %>%
@@ -404,7 +403,7 @@ tbl_muni_pinus_2017_fim
 
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios Euc --------
 
-tbl_muni_2017 <- ageflor_2017 %>% 
+tbl_muni_eucalipto_2017 <- ageflor_2017 %>% 
     
     purrr::pluck(4) %>%
     
@@ -458,23 +457,14 @@ tbl_muni_2017 <- ageflor_2017 %>%
                       readr::parse_number, locale = loc)
     )
 
-tbl_muni_2017
+tbl_muni_eucalipto_2017
 
 
 # separar as colunas de municípios entre diferentes bases
-tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_2017)
-
-
-muni_1 <- tbl_muni_2017 %>% 
-    dplyr::select(area_1, muni_1)
-
-muni_2 <- tbl_muni_2017 %>% 
-    dplyr::select(area_2, muni_2) %>% 
-    dplyr::rename(area_1 = "area_2",
-                  muni_1 = "muni_2")
+tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_eucalipto_2017)
 
 # empilhar as duas bases de muni
-tbl_muni_euc_ageflor_2017 <- dplyr::bind_rows(muni_1, muni_2)
+tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_eucalipto_2017)
 
 # corrigir nomes dos municípios e ajustar colunas
 tbl_muni_euc_2017 <- tbl_muni_euc_ageflor_2017 %>%
@@ -498,7 +488,7 @@ tbl_muni_euc_2017 <- tbl_muni_euc_ageflor_2017 %>%
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios Acacia -----
 
 
-ageflor_2017 %>% 
+tbl_muni_acacia_2017 <- ageflor_2017 %>% 
     
     purrr::pluck(6) %>% 
     
@@ -512,7 +502,71 @@ ageflor_2017 %>%
     purrr::pluck(1) %>% 
     
     # transformar em tibble
-    dplyr::as_tibble(.name_repair = "unique") 
+    dplyr::as_tibble(.name_repair = "unique") %>% 
+    
+    # retirar primeiras linhas
+    dplyr::slice(-(1:4)) %>% 
+    
+    # renomear coluna
+    dplyr::rename(muni_valores = "value") %>% 
+    
+    # separar nomes e números
+    dplyr::mutate(
+        areas = stringr::str_remove_all(muni_valores, "[:alpha:]"),
+        areas = stringr::str_squish(areas),
+        municipios = stringr::str_remove_all(muni_valores, "[0-9.]")
+    ) %>% 
+    
+    # retirar coluna inicial
+    dplyr::select(-muni_valores) %>% 
+    
+    # separar nomes dos municípios
+    tidyr::separate(col = municipios,
+                    into = c("muni_1", "muni_2"),
+                    sep = "  ") %>% 
+    
+    # separar coluna de áreas
+    tidyr::separate(col = areas,
+                    into = c("area_1", "area_2"),
+                    sep = " ") %>% 
+    
+    # limpar colunas e ajustar tipos
+    dplyr::mutate(
+        dplyr::across(.fns = stringr::str_squish),
+        dplyr::across(.cols = area_1:area_2,
+                      readr::parse_number, locale = loc)
+    )
+
+tbl_muni_acacia_2017
+
+
+# empilhar as duas bases de municípios
+tbl_muni_ageflor_acacia_2017 <- empilhar_muni_ageflor_2017(tbl_muni_acacia_2017)
+
+# corrigir nomes dos municípios e ajustar colunas
+tbl_muni_acacia_2017_fim <- tbl_muni_ageflor_acacia_2017 %>%
+    dplyr::mutate(
+        
+        municipio = dplyr::case_when(
+            municipio == "Bage" ~ "Bagé",
+            municipio == "Cangucu" ~ "Canguçu",
+            municipio == "Jaguarao" ~ "Jaguarão",
+            municipio == "Sao Jeronimo" ~ "São Jeronimo",
+            municipio == "Butia" ~ "Butiá",
+            municipio == "Camaqua" ~ "Camaquã",
+            TRUE ~ municipio
+        ),
+        
+        municipio = stringr::str_squish(municipio),
+        
+        genero = "Acácia",
+        
+        # ajustar valor do município canguçu
+        area_ha = dplyr::case_when(municipio == "Canguçu" ~ 9111,
+                                  TRUE ~ area_ha)
+    ) 
+
+tbl_muni_acacia_2017_fim
 
 
 
