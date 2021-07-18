@@ -2,7 +2,7 @@
 # Carregar e instalar pacotes ---------------------------------------------
 
 # if(!require("pacman")) install.packages("pacman")
-# pacman::p_load(tidyverse, tabulizer, janitor)
+# pacman::p_load(tidyverse, tabulizer, tesseract, Rcpp, janitor)
 
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
@@ -219,7 +219,7 @@ tbl_coredes_ageflor_2017_completa <- tbl_coredes_ageflor_2017 %>%
                        names_to = "genero",
                        values_to = "area_ha")
 
-
+# visualizar
 tbl_coredes_ageflor_2017_completa %>% tibble::view()
 
 # verificar totais
@@ -255,7 +255,7 @@ tbl_muni_geral_2017 <-
     # retirar últimas linhas
     dplyr::slice(-c(11:12)) %>% 
     
-    # usar a primeira linha como cabeçalho
+    # renomear coluna
     dplyr::rename(muni_valores = "value") %>% 
     
     # separar nomes e números
@@ -287,20 +287,11 @@ tbl_muni_geral_2017 <-
     
 tbl_muni_geral_2017
 
-# separar as colunas de municípios entre diferentes bases
-muni_1 <- tbl_muni_geral_2017 %>% 
-    dplyr::select(area_1, muni_1)
-
-muni_2 <- tbl_muni_geral_2017 %>% 
-    dplyr::select(area_2, muni_2) %>% 
-    dplyr::rename(area_1 = "area_2",
-                 muni_1 = "muni_2")
-     
-# empilhar as duas bases de muni
+# empilhar as duas bases de municípios
 tbl_muni_ageflor_geral_2017 <- empilhar_muni_ageflor_2017(tbl_muni_geral_2017)
 
 # corrigir nomes dos municípios e ajustar colunas
-tbl_muni_geral_2017 <- tbl_muni_ageflor_geral_2017 %>%
+tbl_muni_geral_2017_fim <- tbl_muni_ageflor_geral_2017 %>%
     dplyr::mutate(
         
         municipio = dplyr::case_when(
@@ -321,13 +312,13 @@ tbl_muni_geral_2017 <- tbl_muni_ageflor_geral_2017 %>%
         genero = "Todos"
     ) 
 
-tbl_muni_geral_2017
+tbl_muni_geral_2017_fim
 
 
 
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios Pin --------
 
-ageflor_2017 %>% 
+tbl_muni_pinus_2017 <- ageflor_2017 %>% 
     
     purrr::pluck(5) %>% 
 
@@ -341,9 +332,75 @@ ageflor_2017 %>%
     purrr::pluck(1) %>% 
     
     # transformar em tibble
-    dplyr::as_tibble(.name_repair = "unique") 
+    dplyr::as_tibble(.name_repair = "unique") %>% 
+    
+    # retirar primeiras linhas
+    dplyr::slice(-(1:4)) %>% 
+    
+    # retirar últimas linhas
+    dplyr::slice(-(13:14)) %>% 
+    
+    # renomear coluna
+    dplyr::rename(muni_valores = "value") %>% 
+    
+    # separar nomes e números
+    dplyr::mutate(
+        muni_valores = stringr::str_remove(muni_valores,"280 "),
+        areas = stringr::str_remove_all(muni_valores, "[:alpha:]"),
+        areas = stringr::str_squish(areas),
+        municipios = stringr::str_remove_all(muni_valores, "[0-9.]")
+    ) %>% 
+    
+    # retirar coluna inicial
+    dplyr::select(-muni_valores) %>% 
+    
+    # retirar linhas com nomes sem números
+    dplyr::filter(!municipios %in% c("Paula", "Ausentes")) %>% 
+    
+    # separar nomes dos municípios
+    tidyr::separate(col = municipios,
+                    into = c("muni_1", "muni_2"),
+                    sep = "  ") %>% 
+    
+    # separar coluna de áreas
+    tidyr::separate(col = areas,
+                    into = c("area_1", "area_2"),
+                    sep = " ") %>% 
+    
+    # limpar colunas e ajustar tipos
+    dplyr::mutate(
+        dplyr::across(.fns = stringr::str_squish),
+        dplyr::across(.cols = area_1:area_2,
+                      readr::parse_number, locale = loc)
+    )
 
 
+# empilhar as duas bases de municípios
+tbl_muni_ageflor_pinus_2017 <- empilhar_muni_ageflor_2017(tbl_muni_pinus_2017)
+tbl_muni_ageflor_pinus_2017 %>% print(n=100)
+
+# corrigir nomes dos municípios e ajustar colunas
+tbl_muni_pinus_2017_fim <- tbl_muni_ageflor_pinus_2017 %>%
+    dplyr::mutate(
+        
+        municipio = dplyr::case_when(
+            municipio == "Cambara do Sul" ~ "Cambará do Sul",
+            municipio == "Cangugcu" ~ "Canguçu",
+            municipio == "Sao Jose do Norte" ~ "São José do Norte",
+            municipio == "Francisco de" ~ "São Francisco de Paula",
+            municipio == "peo Jose dos" ~ "São José dos Ausentes",
+            municipio == "Santa Vitoria do Palmar" ~ "Santa Vitória do Palmar",
+            TRUE ~ municipio
+        ),
+        
+        municipio = stringr::str_squish(municipio),
+        
+        genero = "Pinus"
+    ) 
+
+tbl_muni_pinus_2017_fim
+
+    
 
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios Euc --------
 
