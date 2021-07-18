@@ -106,12 +106,29 @@ tbl_geral_ageflor_2017 <- ageflor_2017 %>%
     # multiplicar por mil para ficar em hectares únicos
     dplyr::mutate(area_ha = area_ha*1000)
 
-tbl_geral_ageflor_2017
+
+# adicionar infos complementares
+tab_historico_ageflor2017_fim <- tbl_geral_ageflor_2017 %>%
+    dplyr::rename(ano_base = "ano") %>% 
+    dplyr::mutate(
+        fonte = "AFUBRA, AGEFLOR, FEPAM, RDK e SEMA",
+        mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  genero,
+                  area_ha) 
+
 
 
 # Conferir totais
-tbl_geral_ageflor_2017 %>% 
-    dplyr::group_by(ano) %>% 
+tab_historico_ageflor2017_fim %>% 
+    dplyr::group_by(ano_base) %>% 
     dplyr::summarise(total = sum(area_ha))
 
 
@@ -219,14 +236,32 @@ tbl_coredes_ageflor_2017_completa <- tbl_coredes_ageflor_2017 %>%
                        names_to = "genero",
                        values_to = "area_ha")
 
+
+# adicionar infos complementares
+tab_coredes_ageflor2017_fim <- tbl_coredes_ageflor_2017_completa %>% 
+    dplyr::mutate(
+        fonte = "AFUBRA, AGEFLOR, FEPAM, RDK e SEMA",
+        mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
+        ano_base = "2016",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  corede,
+                  genero,
+                  area_ha) 
+
 # visualizar
-tbl_coredes_ageflor_2017_completa %>% tibble::view()
+tab_coredes_ageflor2017_fim %>% tibble::view()
 
 # verificar totais
-tbl_coredes_ageflor_2017_completa %>% 
+tab_coredes_ageflor2017_fim %>% 
     dplyr::group_by(corede) %>% 
     dplyr::summarise(area = sum(area_ha, na.rm = TRUE))
-
 
 
 
@@ -460,16 +495,11 @@ tbl_muni_eucalipto_2017 <- ageflor_2017 %>%
 tbl_muni_eucalipto_2017
 
 
-# separar as colunas de municípios entre diferentes bases
-tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_eucalipto_2017)
-
 # empilhar as duas bases de muni
 tbl_muni_euc_ageflor_2017 <- empilhar_muni_ageflor_2017(tbl_muni_eucalipto_2017)
 
 # corrigir nomes dos municípios e ajustar colunas
-tbl_muni_euc_2017 <- tbl_muni_euc_ageflor_2017 %>%
-    dplyr::rename(area_ha = "area_1",
-                  municipio = "muni_1") %>% 
+tbl_muni_euc_2017_fim <- tbl_muni_euc_ageflor_2017 %>%
     dplyr::mutate(
         municipio = dplyr::case_when(
             municipio == "Butia" ~ "Butiá",
@@ -483,10 +513,10 @@ tbl_muni_euc_2017 <- tbl_muni_euc_ageflor_2017 %>%
         genero = "Eucalyptus"
     ) 
 
+tbl_muni_euc_2017_fim
 
 
 # Faxinar e organizar tabela do pdf - 2017 - Tabela Municípios Acacia -----
-
 
 tbl_muni_acacia_2017 <- ageflor_2017 %>% 
     
@@ -568,6 +598,42 @@ tbl_muni_acacia_2017_fim <- tbl_muni_ageflor_acacia_2017 %>%
 
 tbl_muni_acacia_2017_fim
 
+
+
+# Juntar tabelas de municípios - 2017 -------------------------------------
+
+# Empilhar
+tab_muni_completo_2017 <-tbl_muni_geral_2017_fim %>% 
+    dplyr::bind_rows(tbl_muni_pinus_2017_fim) %>% 
+    dplyr::bind_rows(tbl_muni_euc_2017_fim) %>% 
+    dplyr::bind_rows(tbl_muni_acacia_2017_fim) 
+    
+
+# Adicionando infos complementares
+tab_municipios_ageflor2017_fim<- tab_muni_completo_2017 %>% 
+    dplyr::mutate(
+        fonte = "AFUBRA, AGEFLOR, FEPAM, RDK e SEMA",
+        mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
+        ano_base = "2016",
+        uf = "RS",
+        estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  municipio,
+                  genero,
+                  area_ha) 
+
+tab_municipios_ageflor2017_fim %>% tibble::view()
+
+# Conferir totais
+tab_municipios_ageflor2017_fim %>% 
+    dplyr::group_by(genero, municipio) %>% 
+    dplyr::summarise(area = sum(area_ha)) %>% 
+    print(n=500)
 
 
 # Faxinar e organizar tabela do pdf - 2020 - Tabelas gerais ----------------
@@ -730,6 +796,13 @@ tab_municipios_ageflor2020 %>%
 
 # Salvar tabela final do pdf ----------------------------------------------
 
+# Ageflor 2017
+tab_coredes_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2017.RDS")
+tab_historico_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_COREDES_2017.RDS")
+tab_municipios_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2017.RDS")
+
+
+# Ageflor 2020
 tab_coredes_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2020.RDS")
 tab_historico_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_COREDES_2020.RDS")
 tab_municipios_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2020.RDS")
