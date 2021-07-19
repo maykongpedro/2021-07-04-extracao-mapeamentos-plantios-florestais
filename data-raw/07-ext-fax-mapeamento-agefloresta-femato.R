@@ -40,15 +40,20 @@ tabulizer::extract_tables(path_agefloresta_2007,
 # FEMATO - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
 path_femato_2013 <- "./data-raw/pdf/05-MT/femato_diagnostico_florestas_plantadas_2013.pdf"
 
+
 # Extraindo tabela
 femato_2013 <- tabulizer::extract_tables(path_femato_2013,
                                          method = "stream")
 
 femato_2013
 
+# Página 3 só funciona capturando o texto
+femato_2013_pag3 <- tabulizer::extract_text(path_femato_2013,
+                                            pages = 3)
 
 
-# Faxinar e organizar tabela do pdf - Femato 2013 -------------------------
+
+# Faxinar e organizar tabela do pdf - Femato 2013 - Pag1 ------------------
 
 # Manipular tabela - Página 1
 pagina1_muni_2013 <- femato_2013 %>% 
@@ -96,8 +101,11 @@ pagina1_muni_2013 %>%
     tibble::view()
 
 
+
+# Faxinar e organizar tabela do pdf - Femato 2013 - Pag2 ------------------
+
 # Manipular tabela - Página 2
-femato_2013 %>% 
+pagina2_muni_2013 <- femato_2013 %>% 
     
     # pgar o item 2
     purrr::pluck(2) %>%  
@@ -126,7 +134,15 @@ femato_2013 %>%
         municipio = stringr::str_to_title(municipio)
     ) %>% 
     
-    tibble::view()
+    # retirar linha que ficou com erro
+    dplyr::filter(regiao != "") %>% 
+    
+    # corrigir esse município
+    dplyr::mutate(
+        municipio = dplyr::case_when(
+            municipio == "Livramento" ~ "Nossa Senhora Do Livramento",
+            TRUE ~ municipio)
+    ) %>% 
 
     # pivotar
     tidyr::pivot_longer(cols = eucalipto:teca,
@@ -134,6 +150,17 @@ femato_2013 %>%
                         values_to = "area_ha")
 
 
+# Conferir totais
+pagina2_muni_2013 %>% 
+    dplyr::group_by(municipio) %>% 
+    dplyr::summarise(area = sum(area_ha, na.rm = TRUE)) %>% 
+    tibble::view()
+
+
+# Faxinar e organizar tabela do pdf - Femato 2013 - Pag3 ------------------
+
+# Manipular tabela - Página 3
+femato_2013 
 
 
 
