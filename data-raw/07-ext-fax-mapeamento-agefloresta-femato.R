@@ -36,7 +36,6 @@ tabulizer::extract_tables(path_agefloresta_2007,
 
 
 
-
 # FEMATO - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
 path_femato_2013 <- "./data-raw/pdf/05-MT/femato_diagnostico_florestas_plantadas_2013.pdf"
 
@@ -160,7 +159,43 @@ pagina2_muni_2013 %>%
 # Faxinar e organizar tabela do pdf - Femato 2013 - Pag3 ------------------
 
 # Manipular tabela - Página 3
-femato_2013 
+femato_2013_pag3 %>% 
+    
+    purrr::pluck(1) %>% 
+    
+    # retirar cada "\r"
+    stringr::str_remove_all("\\\r") %>% 
+    
+    # separar cada linha gerando uma lista
+    stringr::str_split("\n") %>% 
+    
+    # pegar o item da lista
+    purrr::pluck(1) %>% 
+    
+    # transformar em tibble
+    dplyr::as_tibble(.name_repair = "unique") %>% 
+    
+    # retirar primeiras linhas
+    dplyr::slice(-(1:5)) %>% 
+    
+    # renomear coluna
+    dplyr::rename(muni_valores = "value") %>% 
+    
+    # separar nomes e números
+    dplyr::mutate(
+        areas = stringr::str_remove_all(muni_valores, "[:alpha:]"),
+        areas = stringr::str_squish(areas),
+        regioes_muni = stringr::str_remove_all(muni_valores, "[0-9,.]"),
+        regioes_muni = stringr::str_squish(regioes_muni),
+        #municipios = stringr::str_remove_all(regioes_muni, "[a-z]+"),
+        # regioes = stringr::word(regioes_muni), #pegando apenas a primeira palavra
+        # municipios = stringr::word(regioes_muni, start = 2, end = 5)
+        # 
+        #regioes = stringr::str_extract(regioes_muni, "[:alpha:]+")
+    ) %>% 
+    
+    tibble::view()
+    
 
 
 
