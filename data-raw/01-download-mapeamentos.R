@@ -146,11 +146,12 @@ pdftools::pdf_subset(url_apre_estudo_setorial_2017_2018,
 # já foi executado no seguinte projeto:
 # https://github.com/maykongpedro/2021-06-17-tcc-curso-r-faxina-de-dados
 
-# Então nesse projeto apenas será feito o download da base final já organizada:
+# Então nesse repositório apenas será feito o download da base final já organizada,
+# e os devidos ajustes para padronização
 
 ifpr_sfb_2015 <- "https://github.com/maykongpedro/2021-06-17-tcc-curso-r-faxina-de-dados/raw/r-studio-cloud/data/mapeamento_SFB-IFPR_completo_cod_IBGE.rds"
 
-download.file(url = ifpr_sfb_2015, destfile = "./data/PR_IFPR_SFB_2015.rds")
+download.file(url = ifpr_sfb_2015, destfile = "./data-raw/rds/PR_IFPR_SFB_2015.rds")
 
 
 
