@@ -36,26 +36,26 @@ tabulizer::extract_tables(path_agefloresta_2007,
 
 
 
-# FEMATO - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
-path_femato_2013 <- "./data-raw/pdf/05-MT/femato_diagnostico_florestas_plantadas_2013.pdf"
+# famato - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
+path_famato_2013 <- "./data-raw/pdf/05-MT/famato_diagnostico_florestas_plantadas_2013.pdf"
 
 
 # Extraindo tabela
-femato_2013 <- tabulizer::extract_tables(path_femato_2013,
+famato_2013 <- tabulizer::extract_tables(path_famato_2013,
                                          method = "stream")
 
-femato_2013
+famato_2013
 
 # Página 3 só funciona capturando o texto
-femato_2013_pag3 <- tabulizer::extract_text(path_femato_2013,
+famato_2013_pag3 <- tabulizer::extract_text(path_famato_2013,
                                             pages = 3)
 
 
 
-# Faxinar e organizar tabela do pdf - Femato 2013 - Pag1 ------------------
+# Faxinar e organizar tabela do pdf - Famato 2013 - Pag1 ------------------
 
 # Manipular tabela - Página 1
-pagina1_muni_2013 <- femato_2013 %>% 
+pagina1_muni_2013 <- famato_2013 %>% 
     
     # pegar o item 1
     purrr::pluck(1) %>%
@@ -101,10 +101,10 @@ pagina1_muni_2013 %>%
 
 
 
-# Faxinar e organizar tabela do pdf - Femato 2013 - Pag2 ------------------
+# Faxinar e organizar tabela do pdf - Famato 2013 - Pag2 ------------------
 
 # Manipular tabela - Página 2
-pagina2_muni_2013 <- femato_2013 %>% 
+pagina2_muni_2013 <- famato_2013 %>% 
     
     # pgar o item 2
     purrr::pluck(2) %>%  
@@ -156,10 +156,10 @@ pagina2_muni_2013 %>%
     tibble::view()
 
 
-# Faxinar e organizar tabela do pdf - Femato 2013 - Pag3 ------------------
+# Faxinar e organizar tabela do pdf - Famato 2013 - Pag3 ------------------
 
 # Manipular tabela - Página 3
-pagina3_muni_2013 <- femato_2013_pag3 %>% 
+pagina3_muni_2013 <- famato_2013_pag3 %>% 
     
     purrr::pluck(1) %>% 
     
@@ -300,15 +300,48 @@ pagina3_muni_2013 %>%
 
 
 
-# Unir tabelas de municípios - Femato 2013 --------------------------------
+# Unir tabelas de municípios - Famato 2013 --------------------------------
 
-pagina1_muni_2013
-pagina2_muni_2013
-pagina3_muni_2013
+# Empilhar dados
+tab_muni_2013_completa <- pagina1_muni_2013 %>% 
+    dplyr::bind_rows(pagina2_muni_2013) %>% 
+    dplyr::bind_rows(pagina3_muni_2013) 
 
+
+# Adicionar infoss complementares
+tab_muni_2013_fim <- tab_muni_2013_completa %>% 
+    dplyr::mutate(
+        fonte = "Imea",
+        mapeamento = "Famato - Diagnóstico de florestas plantadas do Estado de Mato Grosso - 2013",
+        ano_base = "2012",
+        uf = "MT",
+        estado = "Mato Grosso"
+    ) %>% 
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "teca" ~ "Tectona",
+            TRUE ~ genero
+        )
+    ) %>% 
+    
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  municipio,
+                  genero,
+                  area_ha) 
+
+# Conferir totais
+tab_muni_2013_fim %>% 
+    dplyr::group_by(genero) %>% 
+    dplyr::summarise(area = sum(area_ha, na.rm = TRUE)) %>% 
+    tibble::view()
 
 
 # Salvar tabela final do pdf ----------------------------------------------
-
+tab_muni_2013_fim %>% saveRDS("./data/MT_FAMATO_MUNICIPIOS_2013.RDS")
 
 
