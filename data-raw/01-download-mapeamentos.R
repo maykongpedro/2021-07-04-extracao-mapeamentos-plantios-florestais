@@ -209,14 +209,17 @@ pdftools::pdf_subset(ageflor_relatorio_2017,
 # FAMATO - Diagnóstico de Florestas Plantadas 2013
 # Pode ser obtido no site da AREFLORESTA (Associação de Reflorestadores do Mato Grosso)
 # pelo seguite link:
-
-femato_diag_flor_plant_2013 <- "http://www.arefloresta.org.br/uploads/downloads/00072201414739.pdf"
+# 
+# femato_diag_flor_plant_2013 <- "http://www.arefloresta.org.br/uploads/downloads/00072201414739.pdf"
 
 # extraindo e salvando apenas as páginas que seram utilizadas
-pdftools::pdf_subset(femato_diag_flor_plant_2013, 
-                     pages = c(103:105), 
-                     output = "./data-raw/pdf/05-MT/femato_diagnostico_florestas_plantadas_2013.pdf")
+# pdftools::pdf_subset(femato_diag_flor_plant_2013, 
+#                      pages = c(103:105), 
+#                      output = "./data-raw/pdf/05-MT/famato_diagnostico_florestas_plantadas_2013.pdf")
 
+# atualização 19/07/2021:
+# mapeamento com diversos problemas para identificação das tabelas, a princípio
+# não será realizado a extração dos dados
 
 
 # 08 - Mapeamento do Mato Grosso - AREFLORESTA ----------------------------
@@ -230,7 +233,6 @@ arefloresta_disg_plant_flor_2007 <- "http://www.arefloresta.org.br/uploads/downl
 pdftools::pdf_subset(arefloresta_disg_plant_flor_2007, 
                      pages = c(15:18, 20, 23, 25:27), 
                      output = "./data-raw/pdf/05-MT/agefloresta_diagnostico_plantacoes_florestais_2007.pdf")
-
 
 
 # 09 - Bases adicionais ---------------------------------------------------

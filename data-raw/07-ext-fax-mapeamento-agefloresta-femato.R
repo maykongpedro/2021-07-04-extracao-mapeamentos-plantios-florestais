@@ -13,30 +13,7 @@ loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
 
 # Importar pdfs -----------------------------------------------------------
 
-# AGEFLORESTA - Diagnóstico das Plantações Florestais em Mato Grosso - 2007
-
-path_agefloresta_2007 <- "./data-raw/pdf/05-MT/agefloresta_diagnostico_plantacoes_florestais_2007.pdf"
-
-# Extraindo infos da página 1 (pois o tabulizer não consegue achar nada)
-agefloresta_2007_pg1 <- tabulizer::extract_text(path_agefloresta_2007,
-                                                pages = 1)
-    
-    
-agefloresta_2007_pg1
-
-
-tabulizer::extract_tables(path_agefloresta_2007,
-                          pages = 9,
-                          method = "stream")
-
-# pag 2 - ok
-# pag 5 - nao pega o nome das cidades direito
-# pag 6 - ficou zoado, mas da pra capturar algumas coisas
-# pag 9 - nao pegou muita coisa nao
-
-
-
-# famato - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
+# Famato - Diagnóstico de Florestas Plantadas do Mato Grosso - 2013
 path_famato_2013 <- "./data-raw/pdf/05-MT/famato_diagnostico_florestas_plantadas_2013.pdf"
 
 
@@ -49,7 +26,6 @@ famato_2013
 # Página 3 só funciona capturando o texto
 famato_2013_pag3 <- tabulizer::extract_text(path_famato_2013,
                                             pages = 3)
-
 
 
 # Faxinar e organizar tabela do pdf - Famato 2013 - Pag1 ------------------
