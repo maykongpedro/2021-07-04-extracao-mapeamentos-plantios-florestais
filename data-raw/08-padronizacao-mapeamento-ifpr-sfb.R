@@ -52,5 +52,5 @@ ifpr_sfb_2015_fim <- ifpr_sfb_2015 %>%
 
 
 # Salvar tabela final -----------------------------------------------------
-ifpr_sfb_2015_fim %>% saveRDS("./data/PR_IFPR_SFB_MUNICIPIOS_2015.RDS")
+ifpr_sfb_2015_fim %>% saveRDS("./data/PR_IFPR_SFB_MUNICIPIOS_2015_COD-IBGE.RDS")
 
