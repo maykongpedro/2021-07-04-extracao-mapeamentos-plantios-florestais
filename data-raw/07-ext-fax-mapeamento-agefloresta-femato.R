@@ -159,7 +159,7 @@ pagina2_muni_2013 %>%
 # Faxinar e organizar tabela do pdf - Femato 2013 - Pag3 ------------------
 
 # Manipular tabela - Página 3
-femato_2013_pag3 %>% 
+pagina3_muni_2013 <- femato_2013_pag3 %>% 
     
     purrr::pluck(1) %>% 
     
@@ -183,20 +183,132 @@ femato_2013_pag3 %>%
     
     # separar nomes e números
     dplyr::mutate(
+        
+        # remover letras
         areas = stringr::str_remove_all(muni_valores, "[:alpha:]"),
+        
+        # retirar espaços desnecessários
         areas = stringr::str_squish(areas),
+        
+        # remover números
         regioes_muni = stringr::str_remove_all(muni_valores, "[0-9,.]"),
+        
+        # retirar espaços desnecessários
         regioes_muni = stringr::str_squish(regioes_muni),
-        #municipios = stringr::str_remove_all(regioes_muni, "[a-z]+"),
-        # regioes = stringr::word(regioes_muni), #pegando apenas a primeira palavra
-        # municipios = stringr::word(regioes_muni, start = 2, end = 5)
-        # 
-        #regioes = stringr::str_extract(regioes_muni, "[:alpha:]+")
+        
+        # extrair somente os municípios
+        municipio = stringr::str_extract(regioes_muni, "[A-Z\u00C0-\u00DD ]+$"),
+        
+        # remover os municípios para obter somente as regiões
+        regiao = stringr::str_remove(regioes_muni, municipio),
+        
+        # deixar apenas com a primeira letra da palavra em caixa alta
+        municipio = stringr::str_to_title(municipio),
+        
+        # limpar espaços desnecessários
+        municipio = stringr::str_squish(municipio),
+        
+        # substituir vazio por NA
+        dplyr::across(dplyr::everything(),
+                      dplyr::na_if,  ""
+        )
+            
+        
     ) %>% 
     
-    tibble::view()
+    # retirar colunas auxiliares
+    dplyr::select(-muni_valores,-regioes_muni) %>% 
     
+    # separar números
+    tidyr::separate(col = "areas",
+                    into = c("eucalipto", "teca", "total"),
+                    sep = " ") %>% 
+    
+    # realocar
+    dplyr::select(regiao,
+                  municipio,
+                  eucalipto,
+                  teca,
+                  total) %>% 
+    
+    # remover linhas completamente vazias
+    janitor::remove_empty("rows") %>% 
+    
+    # ajustes manuais
+    dplyr::mutate(
+        
+        # ajustar nome dos municípios com quebra de linha na tab. original
+        municipio = dplyr::case_when(
+            municipio == "Leverger" ~ "Santo Antônio Do Lerverger",
+            municipio == "Marcos" ~ "Sao José Dos Quatro Marcos",
+            municipio == "Trindade" ~ "Vila Bela Da Santíssima Trindade",
+            TRUE ~ municipio
+        ),
+        
+        # ajustar regiões faltantes
+        regiao = dplyr::case_when(
+            municipio == "Santo Antônio Do Lerverger" ~ "Centro-Sul",
+            municipio == "Sao José Dos Quatro Marcos" ~ "Oeste",
+            municipio == "Vila Bela Da Santíssima Trindade" ~ "Oeste",
+            TRUE ~ regiao
+        ),
+
+        # ajustar números do eucalipto
+        eucalipto = dplyr::case_when(
+            is.na(teca) ~ eucalipto,
+            eucalipto == teca ~ eucalipto,
+            eucalipto == "-" ~ teca,
+            TRUE ~ eucalipto
+        ),
+        
+        # ajustar números da teca
+        teca = dplyr::case_when(
+            teca == eucalipto ~ NA_character_,
+            TRUE ~ teca
+        ),
+        
+        # preencher números faltantes da teca
+        teca = dplyr::case_when(
+            is.na(teca) ~ total,
+            TRUE ~ teca
+        )
+    
+    ) %>% 
+    
+    # retirar linhas com NA
+    dplyr::filter(!is.na(regiao)) %>% 
+    
+    # retirar coluna de total
+    dplyr::select(-total) %>% 
+    
+    # pivotar
+    tidyr::pivot_longer(cols = eucalipto:teca,
+                        names_to = "genero",
+                        values_to = "area_ha") %>% 
+    
+    # corrigir tipo das colunas
+    dplyr::mutate(
+        area_ha = readr::parse_number(area_ha, locale = loc)
+    ) 
+
+
+# Conferir totais
+pagina3_muni_2013 %>% 
+    dplyr::group_by(municipio) %>% 
+    dplyr::summarise(area = sum(area_ha, na.rm = TRUE)) %>% 
+    tibble::view()
+
+
+
+# Unir tabelas de municípios - Femato 2013 --------------------------------
+
+pagina1_muni_2013
+pagina2_muni_2013
+pagina3_muni_2013
 
 
 
 # Salvar tabela final do pdf ----------------------------------------------
+
+
+
