@@ -27,29 +27,6 @@ ibge_2018 <- tabulizer::extract_tables(sfb_florestas_brasil_resumo_2019,
 ibge_2018
 
 
-
-# Boletim SNIF 2019, que compilou dados de 2014 a 2018 do PEVS/IBGE  
-sfb_boletim_2019 <- "./data-raw/pdf/01-Brasil/02-IBGE/snif_2019_dados_ibge.pdf"
-
-# Necessário usar OCR para extração (precisa do pacote 'tesseract')
-# OCR: Optical Character Recognition
-# OCR é feita em 3 passos
-# 1. PDF é transformado em imagem
-# 2. A imagem é lida no pacote {magick}
-# 3. O {magick} chama o {tesseract} para passar OCR
-# obs: tesseract é uma ferramenta de OCR open source desenvolvida pela Google.
-# nota: explicação retirada da aula de faxina de dados da Curso R
-ibge_hist_2014_2018_t <- pdftools::pdf_ocr_text(sfb_boletim_2019)
-
-cat(ibge_hist_2014_2018_t)
-
-# Será que realmente é necessário essa base? Visto que os dados já eistem em outras
-# e não sei exatamente como extrair
-
-ibge_hist_2014_2018_t
-
-
-
 # Organizar tabela do csv -------------------------------------------------
 
 ibge_hist_2014_2016 

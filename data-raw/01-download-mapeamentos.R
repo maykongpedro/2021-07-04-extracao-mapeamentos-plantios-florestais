@@ -85,12 +85,17 @@ readr::write_csv2(url_ibge_historico,
 # da Pesquisa de Extração Vegetal e Silvicultura – PEVS/IBGE.
 # O link do Boletim segue abaixo:
 
-snif_2019_ibge <- "https://snif.florestal.gov.br/images/pdf/publicacoes/Boletim-SNIF_Ed1_2019.pdf"
+# snif_2019_ibge <- "https://snif.florestal.gov.br/images/pdf/publicacoes/Boletim-SNIF_Ed1_2019.pdf"
+# 
+# # extraindo e salvando apenas a página que será utilizada
+# pdftools::pdf_subset(snif_2019_ibge, 
+#                      pages = 8, 
+#                      output = "./data-raw/pdf/01-Brasil/02-IBGE/snif_2019_dados_ibge.pdf")
 
-# extraindo e salvando apenas a página que será utilizada
-pdftools::pdf_subset(snif_2019_ibge, 
-                     pages = 8, 
-                     output = "./data-raw/pdf/01-Brasil/02-IBGE/snif_2019_dados_ibge.pdf")
+# Essa informação acaba não sendo muito relevante por já existir a base do IBGE
+# completa (com municípios e estados) no site do SNIF (Sistema Nacional de Informações
+# Florestais). Então ela será desconsiderada nesse trabalho.
+
 
 
 # IBGE/PEVS Histórico mais recente por estado
