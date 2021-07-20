@@ -29,8 +29,50 @@ ibge_2018
 
 # Organizar tabela do csv -------------------------------------------------
 
-ibge_hist_2014_2016 
+ibge_hist_2014_2016_fim <- ibge_hist_2014_2016 %>% 
+    janitor::clean_names() %>% 
+    dplyr::mutate(
+        fonte = "IBGE - Dados disponibilizados pelo SNIF",
+        mapeamento = "IBGE - Não identificado",
+        ano_base = stringr::str_extract(ano_data, "[0-9]{4}$")
+    ) %>% 
     
+    dplyr::rename(uf = "estado_sigla",
+                 genero = "especie_florestal",
+                 municipio = "municipio_municipios") %>% 
+
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "Eucalipto" ~ "Eucalyptus",
+            genero == "Outras espécies" ~ "Outros",
+            TRUE ~ genero
+        )
+    ) %>% 
+    
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  municipio,
+                  latitude,
+                  longitude,
+                  genero,
+                  area_ha) 
+
+# Conferindo totais
+ibge_hist_2014_2016_fim %>% 
+    dplyr::group_by(uf) %>% 
+    dplyr::summarise(total = sum(area_ha, na.rm = TRUE))
+
+ibge_hist_2014_2016 %>% 
+    janitor::clean_names() %>% 
+    dplyr::group_by(estado_sigla) %>% 
+    dplyr::summarise(total = sum(area_ha, na.rm = TRUE))
+
+
+# Salvar tabela final do csv ----------------------------------------------
+ibge_hist_2014_2016_fim %>% saveRDS("./data/BR_IBGE_SNIF_HISTORICO_MUNICIPIOS_2014_2016.RDS")
 
 
 # Faxinar e organizar tabela do pdf ---------------------------------------
