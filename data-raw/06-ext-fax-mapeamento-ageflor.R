@@ -506,8 +506,8 @@ tbl_muni_euc_2017_fim <- tbl_muni_euc_ageflor_2017 %>%
             municipio == "Sao Gabriel" ~ "São Gabriel",
             municipio == "Bage" ~ "Bagé",
             municipio == "Cangugu" ~ "Canguçu",
-            municipio == "Sao Jeronimo" ~ "São Jeronimo",
-            municipio == "Sdo Francisco de Asses" ~ "São Francisco de Assis",
+            municipio == "Sao Jeronimo" ~ "São Jerônimo",
+            municipio == "Sdo Francisco de Assis" ~ "São Francisco de Assis",
             TRUE ~ municipio
         ),
         genero = "Eucalyptus"
@@ -581,7 +581,7 @@ tbl_muni_acacia_2017_fim <- tbl_muni_ageflor_acacia_2017 %>%
             municipio == "Bage" ~ "Bagé",
             municipio == "Cangucu" ~ "Canguçu",
             municipio == "Jaguarao" ~ "Jaguarão",
-            municipio == "Sao Jeronimo" ~ "São Jeronimo",
+            municipio == "Sao Jeronimo" ~ "São Jerônimo",
             municipio == "Butia" ~ "Butiá",
             municipio == "Camaqua" ~ "Camaquã",
             TRUE ~ municipio
