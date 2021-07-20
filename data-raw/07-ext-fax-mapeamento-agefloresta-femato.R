@@ -112,10 +112,11 @@ pagina2_muni_2013 <- famato_2013 %>%
     # retirar linha que ficou com erro
     dplyr::filter(regiao != "") %>% 
     
-    # corrigir esse município
+    # corrigir esse município e outro com nome errado (erro do pdf)
     dplyr::mutate(
         municipio = dplyr::case_when(
             municipio == "Livramento" ~ "Nossa Senhora Do Livramento",
+            municipio == "Planalto Da Sera" ~ "Planalto Da Serra",
             TRUE ~ municipio)
     ) %>% 
 
@@ -215,16 +216,16 @@ pagina3_muni_2013 <- famato_2013_pag3 %>%
         
         # ajustar nome dos municípios com quebra de linha na tab. original
         municipio = dplyr::case_when(
-            municipio == "Leverger" ~ "Santo Antônio Do Lerverger",
-            municipio == "Marcos" ~ "Sao José Dos Quatro Marcos",
+            municipio == "Leverger" ~ "Santo Antônio Do Leverger",
+            municipio == "Marcos" ~ "São José Dos Quatro Marcos",
             municipio == "Trindade" ~ "Vila Bela Da Santíssima Trindade",
             TRUE ~ municipio
         ),
         
         # ajustar regiões faltantes
         regiao = dplyr::case_when(
-            municipio == "Santo Antônio Do Lerverger" ~ "Centro-Sul",
-            municipio == "Sao José Dos Quatro Marcos" ~ "Oeste",
+            municipio == "Santo Antônio Do Leverger" ~ "Centro-Sul",
+            municipio == "São José Dos Quatro Marcos" ~ "Oeste",
             municipio == "Vila Bela Da Santíssima Trindade" ~ "Oeste",
             TRUE ~ regiao
         ),
@@ -319,5 +320,4 @@ tab_muni_2013_fim %>%
 
 # Salvar tabela final do pdf ----------------------------------------------
 tab_muni_2013_fim %>% saveRDS("./data/MT_FAMATO_MUNICIPIOS_2013.RDS")
-
 
