@@ -35,7 +35,6 @@ base_muni_rs_mg
 
 
 # Adicionando código município - Mapeamento FAMATO - 2013  ---------------
-
 # Fazer join
 famato_2013 <- mapeamentos_municipios %>% 
     purrr::pluck(1) %>% 
@@ -44,15 +43,51 @@ famato_2013 <- mapeamentos_municipios %>%
     dplyr::relocate(code_muni, .before = "genero")
 
 # Verificar itens não encontrados
-ageflor_2016 %>% 
-    dplyr::filter(is.na(code_muni)) %>% 
-    tibble::view()
+famato_2013 %>% 
+    dplyr::filter(is.na(code_muni)) 
 
 
 
+# Adicionando código município - Mapeamento AGEFLOR - 2017  ---------------
+# Fazer join
+ageflor_2017 <- mapeamentos_municipios %>% 
+    purrr::pluck(2) %>% 
+    dplyr::mutate(municipio = stringr::str_to_title(municipio)) %>% 
+    dplyr::left_join(base_muni_rs_mg) %>% 
+    dplyr::select(-code_state) %>% 
+    dplyr::relocate(code_muni, .before = "genero")
 
-# Adicionando código município - Mapeamento AGEFLOR - 2016  ---------------
+ageflor_2017
+
+
+# Verificar itens não encontrados
+ageflor_2017 %>% 
+    dplyr::filter(is.na(code_muni))
 
 
 
-readr::read_rds("./data/PR_IFPR_SFB_MUNICIPIOS_2015_COD-IBGE.RDS")
+# Adicionando código município - Mapeamento AGEFLOR - 2020  ---------------
+# Fazer join
+ageflor_2020 <- mapeamentos_municipios %>% 
+    purrr::pluck(3) %>% 
+    dplyr::mutate(municipio = stringr::str_to_title(municipio)) %>% 
+    dplyr::left_join(base_muni_rs_mg) %>% 
+    dplyr::select(-code_state) %>% 
+    dplyr::relocate(code_muni, .before = "genero")
+
+ageflor_2020
+
+
+# Verificar itens não encontrados
+ageflor_2017 %>% 
+    dplyr::filter(is.na(code_muni))
+
+
+
+# Salvar bases ------------------------------------------------------------
+
+
+famato_2013 %>% saveRDS("./data/MT_FAMATO_MUNICIPIOS_2013_COD-IBGE.RDS")
+ageflor_2017 %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2017_COD-IBGE.RDS")
+ageflor_2020 %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2020_COD-IBGE.RDS")
+
