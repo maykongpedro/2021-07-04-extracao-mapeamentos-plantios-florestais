@@ -11,13 +11,13 @@
 # Importar bases ----------------------------------------------------------
 
 # Listar arquivos da pasta 'data'
-arquivos <- list.files("./data/", full.names = TRUE)
+arquivos <- list.files("./data/", full.names = TRUE, pattern = ".RDS")
 arquivos
 
 
 # Abrir bases
 bases <- purrr::map(arquivos, .f = readr::read_rds)
-
+bases
 
 # Função para capturar apenas os nomes
 capturar_nomes <- function(lista_arquivos, item){
@@ -77,14 +77,74 @@ mapeamentos_municipios %>% tibble::view()
 
 
 
-# Consolidar bases estaduais ----------------------------------------------
+
+# Consolidar bases estaduais e nacionais ----------------------------------
+
+# Pegar nome das bases gerais
+nomes_bases_gerais <- nomes_arquivos %>%
+    dplyr::filter(
+        !nomes %in% nomes_bases_muni,
+        !stringr::str_detect(nomes, "MUNICIPIOS|AUX")
+    ) %>% 
+    dplyr::pull()
 
 
+# Empilhar essas bases
+mapeamentos_gerais <- purrr::map_dfr(.x = nomes_bases_gerais,
+                                         ~ purrr::pluck(bases, .x)) %>% 
+    dplyr::select(mapeamento,
+                  fonte,
+                  ano_base,
+                  uf,
+                  estado,
+                  regiao,
+                  nucleo_regional,
+                  corede,
+                  genero,
+                  area_ha
+    )
 
 
-# Consolidar históricos ---------------------------------------------------
+# Retirar 2016 e 2019 do histórico Ageflor (RS), pois o mapeamento dos coredes
+# já colocam essa informação dentro da base
+itens_para_retirar <- mapeamentos_gerais %>%
+    dplyr::filter(
+        stringr::str_detect(mapeamento, "AGEFLOR"),
+        is.na(corede),
+        ano_base %in% c("2016", "2019")
+    ) 
 
 
+# Retirar da base
+mapeamentos_gerais_ajust <- mapeamentos_gerais %>% 
+    dplyr::anti_join(itens_para_retirar)
+    
+
+# Checando se saiu da base mesmo
+mapeamentos_gerais %>% nrow()
+itens_para_retirar %>% nrow()  
+mapeamentos_gerais_ajust %>% nrow()  
+
+# Filtrando
+mapeamentos_gerais_ajust %>% 
+    dplyr::filter(
+        stringr::str_detect(mapeamento, "AGEFLOR"),
+        is.na(corede)
+    ) %>% 
+    tibble::view()
+
+
+# Verificando soma geral desses mapeamentos de coredes
+mapeamentos_gerais_ajust %>% 
+    dplyr::filter(stringr::str_detect(mapeamento, "AGEFLOR"),
+                 !is.na(corede)) %>% 
+    dplyr::group_by(ano_base, genero) %>% 
+    dplyr::summarise(total = sum(area_ha, na.rm = TRUE))
+    
+
+arquivos %>% length()
+nomes_bases_muni %>% length()
+nomes_bases_gerais %>% length()
 
 
 # Salvar bases ------------------------------------------------------------
