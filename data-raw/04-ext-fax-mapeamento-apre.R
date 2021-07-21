@@ -115,4 +115,4 @@ tbl_apre_2020 %>%
 
 
 # Salvar tabela final do pdf ----------------------------------------------
-apre_est_set_2020 %>%  saveRDS("./data/PR_APRE_UFPR_2020.RDS")
+tbl_apre_2020 %>%  saveRDS("./data/PR_APRE_UFPR_2020.RDS")
