@@ -797,12 +797,12 @@ tab_municipios_ageflor2020 %>%
 # Salvar tabela final do pdf ----------------------------------------------
 
 # Ageflor 2017
-tab_coredes_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2017.RDS")
-tab_historico_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_COREDES_2017.RDS")
+tab_historico_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2017.RDS")
+tab_coredes_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_COREDES_2017.RDS")
 tab_municipios_ageflor2017_fim %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2017.RDS")
 
 
 # Ageflor 2020
-tab_coredes_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2020.RDS")
-tab_historico_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_COREDES_2020.RDS")
+tab_historico_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_HISTORICO_2020.RDS")
+tab_coredes_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_COREDES_2020.RDS")
 tab_municipios_ageflor2020 %>% saveRDS("./data/RS_AGEFLOR_MUNICIPIOS_2020.RDS")
