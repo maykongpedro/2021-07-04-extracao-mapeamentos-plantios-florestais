@@ -42,6 +42,7 @@ tbl_iba_hist_2006_2016 <- iba_hist_2006_2016 %>%
     dplyr::mutate(
         ano = lubridate::dmy(ano),
         ano_base = lubridate::year(ano),
+        ano_base = as.character(ano_base),
         mapeamento = "IBÁ - Não identificado",
         fonte = "IBÁ - Dados disponibilizados pelo SNIF",
         genero = cultura
@@ -439,7 +440,9 @@ tbl_iba_relatorio_2020 <-
                                  anos %in% fgv ~ "FGV e IBÁ",
                                  TRUE ~ "ND"),
         
-        mapeamento = "IBÁ - Relatório Anual 2020"
+        mapeamento = "IBÁ - Relatório Anual 2020",
+        
+        anos = as.character(anos)
         
     ) %>% 
     
@@ -468,7 +471,7 @@ tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>%
 
 
 tbl_iba_relatorio_2020_fim %>% tibble::view()
-
+tbl_iba_relatorio_2020_fim %>% dplyr::glimpse()
 
 # Salvar tabela final -----------------------------------------------------
 tbl_iba_relatorio_2020_fim %>% saveRDS("./data/BR_IBA_RELATORIO_2020.rds")
