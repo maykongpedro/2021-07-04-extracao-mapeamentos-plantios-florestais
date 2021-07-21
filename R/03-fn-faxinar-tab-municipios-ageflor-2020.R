@@ -14,7 +14,7 @@ faxinar_ageflor_2020_muni <-function(tabelas_extraidas, nome_tabela){
     loc <- readr::locale(decimal_mark = ",", grouping_mark = ".")
     tab_completa <- tabelas_extraidas %>% 
         purrr::pluck(nome_tabela) %>%
-        tibble::as.tibble(.name_repair = "unique") %>%
+        tibble::as_tibble(.name_repair = "unique") %>%
         janitor::row_to_names(1) %>%
         janitor::clean_names() %>% 
         dplyr::select(-x,- x_2) %>% 
