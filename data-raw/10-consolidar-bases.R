@@ -142,6 +142,7 @@ mapeamentos_gerais_ajust %>%
     dplyr::summarise(total = sum(area_ha, na.rm = TRUE))
     
 
+# Confirmando números de mapeamentos
 arquivos %>% length()
 nomes_bases_muni %>% length()
 nomes_bases_gerais %>% length()
@@ -149,4 +150,4 @@ nomes_bases_gerais %>% length()
 
 # Salvar bases ------------------------------------------------------------
 mapeamentos_municipios %>% saveRDS("./data/consolidado/mapeamentos_municipios.rds")
-
+mapeamentos_gerais_ajust %>% saveRDS("./data/consolidado/mapeamentos_gerais.rds")
