@@ -114,6 +114,7 @@ tab_historico_ageflor2017_fim <- tbl_geral_ageflor_2017 %>%
         fonte = "AFUBRA, AGEFLOR, FEPAM, RDK e SEMA",
         mapeamento = "AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017",
         uf = "RS",
+        ano_base = as.character(ano_base),
         estado = "Rio Grande do Sul"
     ) %>% 
     dplyr::select(mapeamento,
