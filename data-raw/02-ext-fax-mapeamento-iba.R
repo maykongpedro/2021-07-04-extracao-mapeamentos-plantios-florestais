@@ -8,6 +8,9 @@
 # Carregar pipe
 '%>%' <- magrittr::`%>%`
 
+# Importar base de unidades federativas
+uf_estados <- readr::read_rds("data/AUX_IBGE_UF_ESTADOS.RDS")
+
 # Importar csv ------------------------------------------------------------
 
 iba_hist_2006_2016 <- readr::read_csv2("data-raw/csv/iba_historico_florestas_plantadas_2006-2016.csv")
@@ -66,9 +69,6 @@ tbl_iba_hist_2006_2016 <- iba_hist_2006_2016 %>%
                   especie,
                   area_ha)
 
-
-# adicionar coluna de uf
-uf_estados <- readr::read_rds("data/AUX_IBGE_UF_ESTADOS.RDS")
 
 tbl_iba_hist_2006_2016_fim <- tbl_iba_hist_2006_2016 %>% 
     dplyr::left_join(uf_estados) %>% 
@@ -460,8 +460,17 @@ tbl_iba_relatorio_2020 <-
 # adicionar coluna de uf
 tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>% 
     dplyr::mutate(
+        
         dplyr::across(.cols = dplyr::everything(),
-                      .fns = stringr::str_squish)
+                      .fns = stringr::str_squish),
+        
+        estado = dplyr::case_when(
+            estado == "Espiríto Santo" ~ "Espírito Santo",
+            TRUE ~ estado
+        ),
+        
+        area_ha = as.double(area_ha)
+        
     ) %>% 
     dplyr::left_join(uf_estados) %>% 
     dplyr::select(mapeamento,
@@ -471,7 +480,6 @@ tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>%
                   estado,
                   genero,
                   area_ha) 
-
 
 tbl_iba_relatorio_2020_fim %>% tibble::view()
 tbl_iba_relatorio_2020_fim %>% dplyr::glimpse()
