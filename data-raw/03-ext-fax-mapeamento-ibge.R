@@ -134,6 +134,15 @@ uf_estados <- readr::read_rds("data/AUX_IBGE_UF_ESTADOS.RDS")
 tbl_ibge_2018_fim <- tbl_ibge_2018 %>% 
     dplyr::left_join(uf_estados) %>% 
     
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "outros" ~ "Outros",
+            TRUE ~ genero
+        )
+    ) %>% 
+    
     # organizando colunas
     dplyr::select(mapeamento,
                   fonte,
@@ -143,7 +152,7 @@ tbl_ibge_2018_fim <- tbl_ibge_2018 %>%
                   genero,
                   area_ha) 
 
-
+tbl_ibge_2018_fim %>% tibble::view()
 
 # Salvar tabela final do pdf ----------------------------------------------
 tbl_ibge_2018_fim %>% saveRDS("./data/BR_IBGE_PEVS_2018.RDS")
