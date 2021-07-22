@@ -90,7 +90,6 @@ tbl_iba_hist_2006_2016_fim %>%
 tbl_iba_hist_2006_2016_fim %>% saveRDS("./data/BR_IBA_SNIF_HISTORICO_2006_2016.rds")
 
 
-
 # Faxinar e organizar tabela - Eucalipto ----------------------------------
 
 # exibir números sem notação científica
@@ -460,6 +459,10 @@ tbl_iba_relatorio_2020 <-
 
 # adicionar coluna de uf
 tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>% 
+    dplyr::mutate(
+        dplyr::across(.cols = dplyr::everything(),
+                      .fns = stringr::str_squish)
+    ) %>% 
     dplyr::left_join(uf_estados) %>% 
     dplyr::select(mapeamento,
                   fonte,
