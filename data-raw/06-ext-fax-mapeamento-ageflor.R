@@ -117,6 +117,15 @@ tab_historico_ageflor2017_fim <- tbl_geral_ageflor_2017 %>%
         ano_base = as.character(ano_base),
         estado = "Rio Grande do Sul"
     ) %>% 
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            genero == "todos" ~ "Todos",
+            TRUE ~ genero
+        )
+    ) %>% 
     dplyr::select(mapeamento,
                   fonte,
                   ano_base,
@@ -246,6 +255,15 @@ tab_coredes_ageflor2017_fim <- tbl_coredes_ageflor_2017_completa %>%
         ano_base = "2016",
         uf = "RS",
         estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            genero == "todos" ~ "Todos",
+            TRUE ~ genero
+        )
     ) %>% 
     dplyr::select(mapeamento,
                   fonte,
@@ -618,6 +636,15 @@ tab_municipios_ageflor2017_fim<- tab_muni_completo_2017 %>%
         ano_base = "2016",
         uf = "RS",
         estado = "Rio Grande do Sul"
+    ) %>% 
+    dplyr::mutate(
+        genero = dplyr::case_when(
+            genero == "eucalipto" ~ "Eucalyptus",
+            genero == "pinus" ~ "Pinus",
+            genero == "acacia" ~ "Acácia",
+            genero == "todos" ~ "Todos",
+            TRUE ~ genero
+        )
     ) %>% 
     dplyr::select(mapeamento,
                   fonte,
