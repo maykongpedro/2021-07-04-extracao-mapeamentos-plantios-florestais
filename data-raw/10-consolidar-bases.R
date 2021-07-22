@@ -87,7 +87,7 @@ nomes_bases_gerais <- nomes_arquivos %>%
         !stringr::str_detect(nomes, "MUNICIPIOS|AUX")
     ) %>% 
     dplyr::pull()
-
+bases
 
 # Empilhar essas bases
 mapeamentos_gerais <- purrr::map_dfr(.x = nomes_bases_gerais,
