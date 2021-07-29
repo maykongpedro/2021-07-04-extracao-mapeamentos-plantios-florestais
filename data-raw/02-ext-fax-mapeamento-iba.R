@@ -412,12 +412,36 @@ tbl_iba_outros<-
     dplyr::mutate(genero = "Outros")
     
 
+# Adicionar manualmente a informação de 2019 que existe apenas no gráfico
+# do relatório de 2020
+base_outros_2019 <- tibble::tribble(
+                                     ~estado, ~area_milhoes_ha,
+                                    "Paraná",    0.02,
+                                 "São Paulo",    0.03,
+                         "Rio Grande do Sul",    0.09,
+                                     "Goiás",    0.01,
+                        "Mato Grosso do Sul",    0.01,
+                               "Mato Grosso",    0.07,
+                                  "Rondônia",    0.02,
+                                      "Pará",    0.06,
+                                   "Roraima",    0.03,
+                                  "Tocantis",    0.01,
+                                  "Maranhão",    0.04,
+                                     "Bahia",    0.01,
+                            "Espírito Santo",    0.01
+                        )
+
+
+
+
+
 
 # Conferir o somatório dos anos
 tbl_iba_outros %>% 
     dplyr::group_by(anos) %>% 
     dplyr::summarise(area_total = sum(area_ha))
 
+tbl_iba_outros
 
 # Consolidar tabela final -------------------------------------------------
 
