@@ -413,7 +413,10 @@ tbl_iba_outros<-
     
 
 # Adicionar manualmente a informação de 2019 que existe apenas no gráfico
-# do relatório de 2020
+# do relatório de 2020 (página do mapa de área plantada - p21)
+# Tentei fazer uma validação pela tabela de totais porém os números ficam
+# muito diferentes do que é apresentado no mapa do relatório, então optei
+# por fazer dessa forma
 base_outros_2019 <- tibble::tribble(
                                      ~estado, ~area_milhoes_ha,
                                     "Paraná",    0.02,
@@ -431,17 +434,32 @@ base_outros_2019 <- tibble::tribble(
                             "Espírito Santo",    0.01
                         )
 
+# Multiplicar os valores por milhão
+base_outros_area_2019 <- base_outros_2019 %>% 
+    dplyr::mutate(
+        area_ha = area_milhoes_ha*10^6,
+        anos = 2019,
+        genero = "Outros"
+    ) %>% 
+    dplyr::select(-area_milhoes_ha)
 
 
-
+# adicionar na base
+tbl_iba_outros <- 
+    dplyr::bind_rows(tbl_iba_outros, base_outros_area_2019) 
 
 
 # Conferir o somatório dos anos
 tbl_iba_outros %>% 
     dplyr::group_by(anos) %>% 
     dplyr::summarise(area_total = sum(area_ha))
-
 tbl_iba_outros
+
+# O total de "Outros" em 2019 não fecha com os 0.39 milhões apresentados no
+# mapa da págian 21, porém os números por estado são exatamente os digitados
+# aqui, então é um erro do próprio relatório anual 2020.
+
+
 
 # Consolidar tabela final -------------------------------------------------
 
@@ -508,7 +526,14 @@ tbl_iba_relatorio_2020_fim <- tbl_iba_relatorio_2020 %>%
 tbl_iba_relatorio_2020_fim %>% tibble::view()
 tbl_iba_relatorio_2020_fim %>% dplyr::glimpse()
 
+
+# Conferindo totais
+tbl_iba_relatorio_2020_fim %>% 
+    dplyr::filter(ano_base == 2019) %>% 
+    dplyr::group_by(genero) %>% 
+    dplyr::summarise(area_total = sum(area_ha))
+
+
+
 # Salvar tabela final -----------------------------------------------------
 tbl_iba_relatorio_2020_fim %>% saveRDS("./data/BR_IBA_RELATORIO_2020.rds")
-
-
