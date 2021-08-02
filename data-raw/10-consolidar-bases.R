@@ -55,7 +55,7 @@ nomes_bases_muni <-
 
 
 # Empilhar essas bases
-mapeamentos_municipios <- purrr::map_dfr(.x = nomes_bases_muni,
+mapeamentos_municipios_geral <- purrr::map_dfr(.x = nomes_bases_muni,
                                          ~ purrr::pluck(bases, .x)) %>% 
     dplyr::select(mapeamento,
                   fonte,
@@ -72,10 +72,28 @@ mapeamentos_municipios <- purrr::map_dfr(.x = nomes_bases_muni,
                   )
 
 # Verificando colunas
-mapeamentos_municipios %>% dplyr::glimpse()
-mapeamentos_municipios %>% tibble::view()
+mapeamentos_municipios_geral %>% dplyr::glimpse()
+mapeamentos_municipios_geral %>% tibble::view()
+
+# Retirar base de municípios do AGEFLOR 2020 com gênero TODOS
+# Pois a soma das outros 3 gêneros juntos dão o resultado total,
+# então manter a base do gênero 'todos' torna redudante. O que 
+# não é o caso da base de 2017.
+ageflor_2020_gen_todos <-mapeamentos_municipios_geral %>% 
+    dplyr::filter(
+        mapeamento == "AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020",
+            genero == "Todos")
 
 
+# Retirar da base
+mapeamentos_municipios <- mapeamentos_municipios_geral %>% 
+    dplyr::anti_join(ageflor_2020_gen_todos)
+
+
+# Verificando
+mapeamentos_municipios %>% 
+    dplyr::filter(stringr::str_detect(mapeamento, "AGEFLOR")) %>% 
+    tibble::view()
 
 
 # Consolidar bases estaduais e nacionais ----------------------------------
@@ -140,7 +158,8 @@ mapeamentos_gerais_ajust %>%
                  !is.na(corede)) %>% 
     dplyr::group_by(ano_base, genero) %>% 
     dplyr::summarise(total = sum(area_ha, na.rm = TRUE))
-    
+
+
 
 # Confirmando números de mapeamentos
 arquivos %>% length()
