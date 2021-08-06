@@ -14,9 +14,31 @@ knitr::opts_chunk$set(
 # Extração de dados de mapeamentos e relatórios de plantios florestais
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-Este repositório tem com objetivo armazenar os scripts referentes à extração e limpeza de dados realizada para compilação e desenvolvimento do pacote [plantiosflorestais](https://github.com/maykongpedro/plantiosflorestais). 
+Este repositório tem com objetivo armazenar os scripts referentes à extração e limpeza de dados realizada para compilação e desenvolvimento do pacote [plantiosflorestais](https://github.com/maykongpedro/plantiosflorestais).
 
-Essa etapa de faxina de dados ocorreu dentro do âmbito do trabalho de conclusão de curso do graduando Maykon Gabriel G. Pedro, como requisito para obtenção de grau de bacharem em Engenharia Florestal.
+Essa etapa de faxina de dados ocorreu dentro do âmbito do trabalho de conclusão de curso do graduando Maykon Gabriel G. Pedro, como requisito para obtenção de grau de bacharel em Engenharia Florestal.
 
+# Estrutura de arquivos
+
+As pastas deste repositório estão organizados da seguinte maneira:
+
+-   data
+
+É onde constam os dados organizados pós extração dos pdfs, a sub-basta `consolidado` contém as bases finais que foram usadas pelo pacote [plantiosflorestais](https://github.com/maykongpedro/plantiosflorestais).
+
+-   data-raw
+
+Nesta pasta ficam armazenados os scripts utilizados para extração e limpeza, além das pastas para organizar as páginas dos relatórios originais dos quais os dados são extraídos.
+
+-   R
+
+Na pasta R estão alocadas as funções criadas para realizar limpeza de dados de várias tabelas em situações semelhantes, visando a replicabilidade fácil do código dentro dos scripts.
+
+O *output* abaixo exibe todos os arquivos existentes nesse projeto:
+
+```{r echo=FALSE}
+fs::dir_tree()
+```
