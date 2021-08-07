@@ -122,3 +122,22 @@ na seguinte tabela:
 | AGEFLOR     | AFUBRA/AGEFLOR, FEPAM, RDK Logs, SEMA | [AGEFLOR - A indústria de base florestal no Rio Grande do Sul 2017](http://www.ageflor.com.br/noticias/wp-content/uploads/2017/08/A-INDUSTRIA-DE-BASE-FLORESTAL-NO-RS-2017.pdf)                      |
 | AGEFLOR     | AGEFLOR, FEPAM, Codex, RDK Logs       | [AGEFLOR - O setor de base florestal no Rio Grande do Sul 2020](http://www.ageflor.com.br/noticias/wp-content/uploads/2020/12/O-Setor-de-Base-Florestal-no-Rio-Grande-do-Sul-2020-ano-base-2019.pdf) |
 | FAMATO      | IMEA                                  | [Diagnóstico de Florestas Plantadas do Estado do Mato Grosso](http://www.arefloresta.org.br/uploads/downloads/00072201414739.pdf)                                                                    |
+
+# Fluxo de trabalho resumido
+
+Esse tópico visa explicar, de maneira sucinta, o que foi realizado em
+cada script de trabalho, com o objetivo de facilitar a reprodutibidade
+do projeto.
+
+## Script 1 - /data-raw/01-download-mapeamentos
+
+É onde é realizado o download de cada relatório utilizado no trabalho e
+a extração apenas das páginas que possuíam os dados de interesse. Essas
+páginas são os pdfs armazenados dentro da pasta `data-raw/pdf`. Os
+downloads das bases em csv (as duas contidas no
+[SNIF](https://dados.gov.br/dataset/sistema-nacional-de-informacoes-florestais-snif))
+também são efetuados dentro desse script.
+
+Se o download esse repositório for feito de maneira integral com o
+objetivo de replicar as etapas de extração e faxina, os arquivos obtidos
+pelo script irão sobscrever os ja existentes no projeto.
