@@ -73,5 +73,11 @@ Se o download esse repositório for feito de maneira integral com o objetivo de 
 
 
 
+## Script 2 - /data-raw/02-ext-fax-mapeamento-iba
+Os mapeamentos presentes nesse script são dois: a base CSV com dados do IBÁ disponível no SNIF, e o Relatório Anual 2020 do IBÁ, disponível em PDF.
+Para o primeiro, foi realizado apenas uma limpeza e padronização dos dados, depois disso eles foram salvos em formato RDS na pasta `data`, com o nome `BR_IBA_SNIF_HISTORICO_2006_2016`.
 
+O relatório em PDF teve a extração dos dados realizada por meio da função `extract_tables` do pacote `tabulizer`. A extração ocorreu na tabela de dados para o gênero eucalipto, pinus, e para gênero outros. As três foram unidas para gerar um arquivo consolidado representando os dados do relatório. Esse arquivo passou por um procedimento de faxina de dados e foi salvo na pasta `data` como `BR_IBA_RELATORIO_2020`.
+
+Um detalhe para os dados do Relatório 2020 é que a tabela de gênero 'outros' não possui os dados para o ano de 2019, esses foram retirados dos gráficos e mapas presentes no arquivo original, onde foi necessário digitá-los no script e formar uma base auxiliar para os dados de 2019. A soma total de área nos gráficos originais do relatório apresenta o número de 0.39 milhões de hectares para outros gêneros, entretanto, a soma dos números por estado corresponde a 0.41 milhões de hectares, e é esse número que foi considerado neste projeto.
 
