@@ -165,3 +165,19 @@ soma total de área nos gráficos originais do relatório apresenta o
 número de 0.39 milhões de hectares para outros gêneros, entretanto, a
 soma dos números por estado corresponde a 0.41 milhões de hectares, e é
 esse número que foi considerado neste projeto.
+
+## Script 3 - /data-raw/03-ext-fax-mapeamento-ibge
+
+## Script 4 - /data-raw/04-ext-fax-mapeamento-apre
+
+## Script 5 - /data-raw/05-ext-fax-mapeamento-acr
+
+## Script 6 - /data-raw/06-ext-fax-mapeamento-ageflor
+
+## Script 7 - /data-raw/07-ext-fax-mapeamento-agefloresta-femato
+
+## Script 8 - /data-raw/08-padronizacao-mapeamento-ifpr-sfb
+
+## Script 9 - /data-raw/09-add-cod-ibge-municipios
+
+## Script 10 - /data-raw/10-consolidar-bases
